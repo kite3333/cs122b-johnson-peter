@@ -14,6 +14,7 @@ public class mainMenu {
 		Scanner in = new Scanner(System.in);
 		boolean successfullyLoggedIn = false;
 		
+		
 //		When this program is run, the user is asked for the the user name and the user password 
 //		(the database user login info not the password in the above schema) . 
 		System.out.println("Please enter your username for the database:");
@@ -44,7 +45,7 @@ public class mainMenu {
         }
         
         
-        if(successfullyLoggedIn = true)
+        if(successfullyLoggedIn == true)
         {
         	System.out.println("Here is the menu");
         	System.out.println("------------------");
@@ -57,8 +58,16 @@ public class mainMenu {
         	System.out.println("7. Exit the menu (and return to the get-the-database/user/password state).");
         	System.out.println("8. Exit the program.");
         	
+        	int userinput = in.nextInt();
+        	if(userinput == 1)
+        	{
+        		
+        	}
         }
-        
+        if(successfullyLoggedIn == false)
+        {
+        	main(args);
+        }
         
         
        }

@@ -15,8 +15,9 @@ public class JDBC1
                Class.forName("com.mysql.jdbc.Driver").newInstance();
 
                 // Connect to the test database
-               Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb","mytestuser", "mypassword");
-
+               // Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb","mytestuser", "mypassword");
+               Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb","root", "");
+               
                // Create an execute an SQL statement to select all of table"Stars" records
                Statement select = connection.createStatement();
                ResultSet result = select.executeQuery("Select * from stars");

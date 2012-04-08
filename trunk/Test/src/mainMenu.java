@@ -86,15 +86,15 @@ static boolean successfullyLoggedIn = false;
         		int oneInput = in.nextInt();
         		if(oneInput == 1)
         		{
-        			System.out.println("Enter your query here:");
+        			System.out.println("Enter the first name here:");
         			String queryFirstNameOnly = in.next();
                     Statement select = connection.createStatement();
                     ResultSet result = select.executeQuery("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url from movies, stars, stars_in_movies " +
                     		"WHERE stars.first_name =" + '"' + queryFirstNameOnly + '"' + "AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id;");
 
+                	System.out.println("The results of the query");
                     while (result.next())
                     {
-                    	System.out.println("The results of the query");
                             System.out.println("Id = " + result.getInt(1));
                             System.out.println("Title = " + result.getString(2));
                             System.out.println("Year = " + result.getInt(3));
@@ -107,7 +107,68 @@ static boolean successfullyLoggedIn = false;
         		}
         		if(oneInput == 2)
         		{
-        			
+        			System.out.println("Enter the last name here:");
+        			String queryLastNameOnly = in.next();
+                    Statement select = connection.createStatement();
+                    ResultSet result = select.executeQuery("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url from movies, stars, stars_in_movies " +
+                    		"WHERE stars.last_name =" + '"' + queryLastNameOnly + '"' + "AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id;");
+
+                	System.out.println("The results of the query");
+                    while (result.next())
+                    {
+                            System.out.println("Id = " + result.getInt(1));
+                            System.out.println("Title = " + result.getString(2));
+                            System.out.println("Year = " + result.getInt(3));
+                            System.out.println("Director = " + result.getString(4));
+                            System.out.println("Banner_URL = " + result.getString(5));
+                            System.out.println("Trailer_URL = " + result.getString(6));
+                            System.out.println();
+                    }
+                    Menu();
+        		}
+        		if(oneInput == 3)
+        		{
+        			System.out.println("Enter the first name here:");
+        			String queryFirstNameOnly = in.next();
+        			System.out.println("Enter the last name here:");
+        			String queryLastNameOnly = in.next();
+                    Statement select = connection.createStatement();
+                    ResultSet result = select.executeQuery("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url from movies, stars, stars_in_movies " +
+                    		"WHERE stars.first_name =" + '"' + queryFirstNameOnly + '"' + "AND stars.last_name =" + '"' + queryLastNameOnly + '"' + "AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id;");
+
+                	System.out.println("The results of the query");
+                    while (result.next())
+                    {
+                            System.out.println("Id = " + result.getInt(1));
+                            System.out.println("Title = " + result.getString(2));
+                            System.out.println("Year = " + result.getInt(3));
+                            System.out.println("Director = " + result.getString(4));
+                            System.out.println("Banner_URL = " + result.getString(5));
+                            System.out.println("Trailer_URL = " + result.getString(6));
+                            System.out.println();
+                    }
+                    Menu();
+        		}
+        		if(oneInput == 4)
+        		{
+        			System.out.println("Enter the id here:");
+        			int queryIdOnly = in.nextInt();
+                    Statement select = connection.createStatement();
+                    ResultSet result = select.executeQuery("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url from movies, stars, stars_in_movies " +
+                    		"WHERE stars.id =" + '"' + queryIdOnly + '"' + "AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id;");
+
+                	System.out.println("The results of the query");
+                    while (result.next())
+                    {
+                            System.out.println("Id = " + result.getInt(1));
+                            System.out.println("Title = " + result.getString(2));
+                            System.out.println("Year = " + result.getInt(3));
+                            System.out.println("Director = " + result.getString(4));
+                            System.out.println("Banner_URL = " + result.getString(5));
+                            System.out.println("Trailer_URL = " + result.getString(6));
+                            System.out.println();
+                    }
+                    Menu();
         		}
 
         	}

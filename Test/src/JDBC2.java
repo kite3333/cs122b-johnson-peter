@@ -13,7 +13,7 @@ public class JDBC2
         Class.forName("com.mysql.jdbc.Driver").newInstance();
 
         // Connect to the test database
-        Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb","mytestuser", "mypassword");
+        Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb", "root", "");
 
         // create update DB statement -- deleting second record of table; return status
         Statement update = connection.createStatement();

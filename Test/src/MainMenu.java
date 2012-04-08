@@ -10,61 +10,75 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 
-public class mainMenu {
+public class MainMenu {
 
-static String username;
-static String password;
-static boolean successfullyLoggedIn = false;
+private String username;
+private String password;
+private boolean loggedIn = false;
+private Scanner in = new Scanner(System.in);
+private Connection connection;
+
+//mySQL Error Codes
+private static final int USER_DNE = 1044;
+private static final int BAD_PASSWORD = 1045;
+private static final int DB_DNE = 1049;
+
 
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InterruptedException
 	{
-		logIn();
+		MainMenu main = new MainMenu();
+		main.logIn();
        
     }
 	
 	
-	public static void logIn() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
+	public void logIn() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
 	{
-		Scanner in = new Scanner(System.in);
-		
-//		When this program is run, the user is asked for the the user name and the user password 
-//		(the database user login info not the password in the above schema) . 
-		System.out.println("Please enter your username for the database:");
-		
-		username = in.nextLine();
-		
-		System.out.println("Please enter your password for the database:");
-		password = in.nextLine();
-		
-//		If all is well, the employee is granted access (and a message to that effect appears 
-//		on the screen); if access is not allowed, it says why (e.g., the database is 
-//		not present, the password is wrong). Allow a way for the employee to 
-//		exit easily.
 		
 		// Incorporate mySQL driver
         Class.forName("com.mysql.jdbc.Driver").newInstance();
 
-         // Connect to the test database
-        // Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb","mytestuser", "mypassword");
-        try{
-        Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
-        System.out.println("Access granted! Welcome " + username + ".");
-        successfullyLoggedIn = true;
-        Menu();
-        }
-        catch(SQLException e){
-        System.out.println("Access denied! Please verify credentials.");
-        e.printStackTrace();
-        successfullyLoggedIn = false;
-        logIn();
+        // Connect to the test database
+        while (!loggedIn) {
+//			When this program is run, the user is asked for the the user name and the user password 
+//    		(the database user login info not the password in the above schema) . 
+    		System.out.println("Please enter your username for the database:");
+    		username = in.nextLine();
+    		
+    		System.out.println("Please enter your password for the database:");
+    		password = in.nextLine();
+    		
+//    		If all is well, the employee is granted access (and a message to that effect appears 
+//    		on the screen); if access is not allowed, it says why (e.g., the database is 
+//    		not present, the password is wrong). Allow a way for the employee to 
+//    		exit easily.
+	        try{
+	        connection = DriverManager.getConnection("jdbc:mysql:///moviedbw",username, password);
+	        System.out.println("Access granted! Welcome " + username + ".");
+	        loggedIn = true;
+	        Menu();
+	        }
+	        catch(SQLException e){
+	        System.out.print("ACCESS DENIED: ");
+		        switch (e.getErrorCode()) {
+			        case USER_DNE: //Do same things as case: BAD_PASSWORD;
+			        case BAD_PASSWORD: System.out.println("Bad Username/Password."); break;
+			        case DB_DNE: System.out.println("Database not found/connected."); break;
+			        default: 
+			        {
+			        	System.out.println("Error Unknown");
+			        	e.printStackTrace();
+			        }
+		        }
+	        	System.out.println("\n");
+	        }
         }
 	}
 	
-	public static void Menu() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
+	public void Menu() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
 	{
-		Scanner in = new Scanner(System.in);
 		
-        if(successfullyLoggedIn == true)
+        if(loggedIn == true)
         {
         	System.out.println("Here is the menu");
         	System.out.println("------------------");
@@ -452,7 +466,7 @@ static boolean successfullyLoggedIn = false;
         	
         	
         }
-        if(successfullyLoggedIn == false)
+        if(loggedIn == false)
         {
         	logIn();
         }

@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -15,14 +16,14 @@ static String username;
 static String password;
 static boolean successfullyLoggedIn = false;
 
-	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException
+	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InterruptedException
 	{
 		logIn();
        
     }
 	
 	
-	public static void logIn() throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	public static void logIn() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
 	{
 		Scanner in = new Scanner(System.in);
 		
@@ -59,7 +60,7 @@ static boolean successfullyLoggedIn = false;
         }
 	}
 	
-	public static void Menu() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException
+	public static void Menu() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
 	{
 		Scanner in = new Scanner(System.in);
 		
@@ -359,7 +360,95 @@ static boolean successfullyLoggedIn = false;
         	}
         }
         
+        if(userinput == 6)
+        {
+        	System.out.println("Please make a selection below:");
+        	System.out.println("1. Make a valid SELECT SQL command");
+        	System.out.println("2. Make a valid UPDATE SQL command");
+        	System.out.println("3. Make a valid INSERT SQL command");
+        	System.out.println("4. Make a valid DELETE SQL command");
+        	
+        	int selection = in.nextInt();
+        	
+        	if(selection == 1)
+        	{
+        		System.out.println("Enter your SELECT statement below:");
+        		in.nextLine();
+        		String selectQuery = in.nextLine();
+        		
+        		Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+        		Statement select = connection.createStatement();
+                ResultSet result = select.executeQuery(selectQuery);
+                ResultSetMetaData metadata = result.getMetaData();
+                while(result.next())
+                {
+                	for (int i = 1; i <= metadata.getColumnCount(); i++)
+//                      System.out.println("Type of column "+ i + " is " + metadata.getColumnTypeName(i));
+                  	{
+                		System.out.println(metadata.getColumnName(i) + " = " + result.getString(metadata.getColumnName(i)));
+                	}
+                }
+                Menu();
+        	}
+        	if(selection == 2)
+        	{
+        		System.out.println("Enter your UPDATE statement below:");
+        		in.nextLine();
+        		String updateQuery = in.nextLine();
+        		
+        		Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+    	        PreparedStatement updateStars = connection.prepareStatement(updateQuery);
+    	        
+    	        Statement update = connection.createStatement();
+    	        int rows = updateStars.executeUpdate();
+    	        System.out.printf("%d row(s) updated!", rows);
+    	        
+    	        Menu();
+        	}
+        	if(selection == 3)
+        	{
+        		System.out.println("Enter your INSERT statement below:");
+        		in.nextLine();
+        		String insertQuery = in.nextLine();
+        		
+        		Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+                Statement insert = connection.createStatement();
+
+                int rows = insert.executeUpdate(insertQuery);
+                System.out.printf("%d row(s) updated!", rows);
+                
+                //wait 2 seconds
+                Thread.sleep(2000L);
+                Menu();
+        	}
+        	if(selection == 4)
+        	{
+        		System.out.println("Enter your DELETE statement below:");
+        		in.nextLine();
+        		String deleteQuery = in.nextLine();
+        		
+        		Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+                Statement update = connection.createStatement();
+                
+                int rows = update.executeUpdate(deleteQuery);
+                System.out.printf("%d row(s) updated!", rows);
+                
+                //wait 2 seconds
+                Thread.sleep(2000L);
+                Menu();
+        	}
+        	
+        }
         
+        if(userinput == 7)
+        {
+        	logIn();
+        }
+        
+        if(userinput == 8)
+        {
+        	System.exit(0);
+        }
         	
         	
         }

@@ -29,6 +29,7 @@ public class JDBC3
 	                updateStars.setString(1, firstNames[i]);
 	                updateStars.setInt(2, ids[i]);
 	                updateStars.executeUpdate();
+	               
 	            }
     }
 }

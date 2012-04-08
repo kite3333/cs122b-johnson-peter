@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -304,6 +305,61 @@ static boolean successfullyLoggedIn = false;
     		}
     		
         }
+        
+        if(userinput == 5)
+        {
+        	Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+        	System.out.println("Please make a selection below:");
+        	System.out.println("1. Specify metadata for a specific table");
+        	System.out.println("2. Get all metadata for the database");
+        	int selection = in.nextInt();
+        	
+        	if(selection == 1)
+        	{System.out.println("Please provide the database name of which you want metadata for:");
+        	String databaseName = in.next();
+        	
+            Statement select = connection.createStatement();
+            ResultSet result = select.executeQuery("Select * from " + databaseName);
+            
+            System.out.println("The results of the query");
+            ResultSetMetaData metadata = result.getMetaData();
+            System.out.println("There are " + metadata.getColumnCount() + " columns");
+            
+            for (int i = 1; i <= metadata.getColumnCount(); i++)
+//                System.out.println("Type of column "+ i + " is " + metadata.getColumnTypeName(i));
+            	System.out.println(metadata.getColumnName(i) + " is " + metadata.getColumnTypeName(i));
+        	}
+        	
+        	if(selection == 2)
+        	{
+        		DatabaseMetaData dbmd = connection.getMetaData();
+        	    // Specify the type of object; in this case we want tables
+        	    String[] types = {"TABLE"};
+        	    ResultSet resultSet = dbmd.getTables(null, null, "%", types);
+
+        	    // Get the table names
+        	    while (resultSet.next()) {
+        	        // Get the table name
+        	        String tableName = resultSet.getString(3);
+                    Statement select = connection.createStatement();
+                    
+                    ResultSet result = select.executeQuery("Select * from " + tableName);
+                    
+                    System.out.println();
+                    System.out.println("---" + tableName + "---");
+                    System.out.println("The results of the query");
+                    ResultSetMetaData metadata = result.getMetaData();
+                    System.out.println("There are " + metadata.getColumnCount() + " columns");
+                    
+                    for (int i = 1; i <= metadata.getColumnCount(); i++)
+//                        System.out.println("Type of column "+ i + " is " + metadata.getColumnTypeName(i));
+                    	System.out.println(metadata.getColumnName(i) + " is " + metadata.getColumnTypeName(i));
+        	        
+        	    }
+        	}
+        }
+        
+        
         	
         	
         }

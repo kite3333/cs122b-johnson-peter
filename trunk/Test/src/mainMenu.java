@@ -234,9 +234,10 @@ static boolean successfullyLoggedIn = false;
     			String credit_card = in.nextLine();
 
     			Statement select = connection.createStatement();
+
                 ResultSet result = select.executeQuery("SELECT * FROM creditcards " +
                 		"WHERE " + credit_card + "= creditcards.id;");
-    			
+
                 if(!result.next())
                 {
                 	System.out.println("Invalid credit card, returning to main menu...");
@@ -269,7 +270,39 @@ static boolean successfullyLoggedIn = false;
         
         if(userinput == 4)
         {
-        	
+        	Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+    		System.out.println("Please enter a selection from below:");
+        	System.out.println("1. Delete customer by first and last name");
+    		System.out.println("2. Delete customer by id");
+    		in.nextLine();
+    		int userSelection = in.nextInt();
+    		if(userSelection == 1)
+    		{
+    			System.out.println("Enter the customer's first name:");
+    			String firstName = in.next();
+    			System.out.println("Enter the customer's last name:");
+    			String lastName = in.next();
+    			
+                Statement update = connection.createStatement();
+                update.executeUpdate("delete from customers where first_name = " 
+                		+ '"' + firstName + '"' + " AND last_name = " + '"' + lastName + '"' + ";");
+                
+                System.out.println("Query has been processed.");
+                Menu();
+    		}
+    		if(userSelection == 2)
+    		{
+    			System.out.println("Enter the customer's id:");
+    			int id = in.nextInt();
+    			
+    			Statement update = connection.createStatement();
+                update.executeUpdate("delete from customers where id = " 
+                		+ id + ";");
+                
+                System.out.println("Query has been processed.");
+                Menu();
+    		}
+    		
         }
         	
         	

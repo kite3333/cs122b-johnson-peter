@@ -1,28 +1,38 @@
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
 
 public class mainMenu {
 
+static String username;
+static String password;
+static boolean successfullyLoggedIn = false;
 
-	
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException
 	{
+		logIn();
+       
+    }
+	
+	
+	public static void logIn() throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	{
 		Scanner in = new Scanner(System.in);
-		boolean successfullyLoggedIn = false;
-		
 		
 //		When this program is run, the user is asked for the the user name and the user password 
 //		(the database user login info not the password in the above schema) . 
 		System.out.println("Please enter your username for the database:");
 		
-		String username = in.nextLine();
+		username = in.nextLine();
 		
-		System.out.println("Please enter your username for the database:");
-		String password = in.nextLine();
+		System.out.println("Please enter your password for the database:");
+		password = in.nextLine();
 		
 //		If all is well, the employee is granted access (and a message to that effect appears 
 //		on the screen); if access is not allowed, it says why (e.g., the database is 
@@ -38,13 +48,19 @@ public class mainMenu {
         Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
         System.out.println("Access granted! Welcome " + username + ".");
         successfullyLoggedIn = true;
+        Menu();
         }
         catch(SQLException e){
         System.out.println("Access denied! Please verify credentials.");
         successfullyLoggedIn = false;
+        logIn();
         }
-        
-        
+	}
+	
+	public static void Menu() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException
+	{
+		Scanner in = new Scanner(System.in);
+		
         if(successfullyLoggedIn == true)
         {
         	System.out.println("Here is the menu");
@@ -61,14 +77,46 @@ public class mainMenu {
         	int userinput = in.nextInt();
         	if(userinput == 1)
         	{
+        		System.out.println("Enter 1 to query star by FIRST name.");
+        		System.out.println("Enter 2 to query star by LAST name.");
+        		System.out.println("Enter 3 to query star by FIRST and LAST name.");
+        		System.out.println("Enter 4 to query star by ID.");
         		
+        		Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+        		int oneInput = in.nextInt();
+        		if(oneInput == 1)
+        		{
+        			System.out.println("Enter your query here:");
+        			String queryFirstNameOnly = in.next();
+                    Statement select = connection.createStatement();
+                    ResultSet result = select.executeQuery("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url from movies, stars, stars_in_movies " +
+                    		"WHERE stars.first_name =" + '"' + queryFirstNameOnly + '"' + "AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id;");
+
+                    while (result.next())
+                    {
+                    	System.out.println("The results of the query");
+                            System.out.println("Id = " + result.getInt(1));
+                            System.out.println("Title = " + result.getString(2));
+                            System.out.println("Year = " + result.getInt(3));
+                            System.out.println("Director = " + result.getString(4));
+                            System.out.println("Banner_URL = " + result.getString(5));
+                            System.out.println("Trailer_URL = " + result.getString(6));
+                            System.out.println();
+                    }
+                    Menu();
+        		}
+        		if(oneInput == 2)
+        		{
+        			
+        		}
+
         	}
         }
         if(successfullyLoggedIn == false)
         {
-        	main(args);
+        	logIn();
         }
         
-        
-       }
+	}
+	
 }

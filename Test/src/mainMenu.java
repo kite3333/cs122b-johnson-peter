@@ -52,6 +52,7 @@ static boolean successfullyLoggedIn = false;
         }
         catch(SQLException e){
         System.out.println("Access denied! Please verify credentials.");
+        e.printStackTrace();
         successfullyLoggedIn = false;
         logIn();
         }
@@ -170,8 +171,55 @@ static boolean successfullyLoggedIn = false;
                     }
                     Menu();
         		}
-
+        		
         	}
+        	
+        	
+        	if(userinput == 2)
+        	{
+        		Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+        		System.out.println("Enter the first name of the star here (if star has one name only, type blank to leave empty):");
+    			String firstName = in.next();
+    			if(firstName.equals("blank"))
+    			{
+    				firstName = "";
+    			}
+    			System.out.println("Enter the last name of the star here (or if the star only has one name, enter it here):");
+    			String lastName = in.next();
+    			System.out.println("Enter the dob of the star here (type blank to leave empty):");
+    			String dob = in.next();
+
+    			System.out.println("Enter the photo url of the star here (type blank to leave empty):");
+    			String photo_url = in.next();
+    			if(photo_url.equals("blank"))
+    			{
+    				photo_url = "";
+    			}
+                Statement insert = connection.createStatement();
+
+                System.out.println("DOB IS " + dob);
+                if(dob.equals("blank"))
+                {
+                	insert.executeUpdate("INSERT into stars(first_name, last_name, photo_url) " +
+                    		"VALUES (" + '"' + firstName + '"'
+                    		+ "," + '"' + lastName + '"'
+                    		+ "," + '"' + photo_url + '"' +");");
+                }
+                else
+                	{insert.executeUpdate("INSERT into stars(first_name, last_name, dob, photo_url) " +
+                		"VALUES (" + '"' + firstName + '"'
+                		+ "," + '"' + lastName + '"'
+                		+ "," + '"' + dob + '"'
+                		+ "," + '"' + photo_url + '"' +");");
+                	}
+                
+                System.out.println("Query has been processed");
+                
+                Menu();
+        	}
+        	
+        	
+        	
         }
         if(successfullyLoggedIn == false)
         {

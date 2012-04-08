@@ -218,6 +218,59 @@ static boolean successfullyLoggedIn = false;
                 Menu();
         	}
         	
+        	if(userinput == 3)
+        	{
+        		Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb",username, password);
+        		System.out.println("Enter the first name of the customer here (if customer has one name only, type blank to leave empty):");
+        		String firstName = in.next();
+    			if(firstName.equals("blank"))
+    			{
+    				firstName = "";
+    			}
+    			System.out.println("Enter the last name of the customer here (or if the star only has one name, enter it here):");
+    			String lastName = in.next();
+    			System.out.println("Enter the credit card number of the customer here (required):");
+    			in.nextLine();
+    			String credit_card = in.nextLine();
+
+    			Statement select = connection.createStatement();
+                ResultSet result = select.executeQuery("SELECT * FROM creditcards " +
+                		"WHERE " + credit_card + "= creditcards.id;");
+    			
+                if(!result.next())
+                {
+                	System.out.println("Invalid credit card, returning to main menu...");
+                	Menu();
+                }
+                
+    			System.out.println("Enter the address of the customer here (required):");
+    			String address = in.nextLine();
+    			in.nextLine();
+    			System.out.println("Enter the email of the customer here (required):");
+    			String email = in.next();
+    			
+    			System.out.println("Enter the password of the customer here (required):");
+    			String password = in.next();
+    			
+                Statement insert = connection.createStatement();
+
+                insert.executeUpdate("INSERT into customers(first_name, last_name, cc_id, address, email, password) " +
+                		"VALUES (" + '"' + firstName + '"'
+                		+ "," + '"' + lastName + '"'
+                		+ "," + '"' + credit_card + '"'
+                		+ "," + '"' + address + '"' 
+                		+ "," + '"' + email + '"'
+                		+ "," + '"' + password + '"' + ");");
+        
+                System.out.println("Query has been processed");
+                
+                Menu();
+        	}
+        
+        if(userinput == 4)
+        {
+        	
+        }
         	
         	
         }

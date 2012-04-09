@@ -280,7 +280,7 @@ private static final int DB_DNE = 1049;
 	                System.out.println("Query has been processed");
         		}
         		break;
-	        	case 4: { // Delete a customers
+	        	case 4: { // Delete a customer
 		    		System.out.println("Please enter a selection from below:");
 		        	System.out.println("1. Delete customer by first and last name");
 		    		System.out.println("2. Delete customer by id");
@@ -314,7 +314,7 @@ private static final int DB_DNE = 1049;
 		    		
 		        }
 		        break;
-	        	case 5: {
+	        	case 5: { // Print metadata for tables
 		        	System.out.println("Please make a selection below:");
 		        	System.out.println("1. Get metadata for a specific table");
 		        	System.out.println("2. Get all metadata for the database");
@@ -365,7 +365,7 @@ private static final int DB_DNE = 1049;
 		        	}
 		        }
 	        	break;
-	        	case 6: {
+	        	case 6: { //Enter SQL command
 		        	System.out.println("Please make a selection below:");
 		        	System.out.println("1. Make a valid SELECT SQL command");
 		        	System.out.println("2. Make a valid UPDATE SQL command");
@@ -449,8 +449,9 @@ private static final int DB_DNE = 1049;
 		        	}
 		        	
 		        }
-	        	case 7: loggedIn = false; return;
-	        	case 8: exit = true; return;
+	        	break;
+	        	case 7: loggedIn = false; return; //Log out
+	        	case 8: exit = true; return; // Exit the system
 	        	default: {
 	        		System.out.println("Invalid Option");
 	        	}

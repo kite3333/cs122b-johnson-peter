@@ -28,38 +28,57 @@ private static final int DB_DNE = 1049;
 	{
 		MainMenu main = new MainMenu();
 		main.logIn();
+		if (main.loggedIn) {
+			main.menu();
+		}
        
     }
 	
 	
-	public void logIn() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
+	public void logIn()
 	{
 		
-		// Incorporate mySQL driver
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
+        try {
+    		// Incorporate mySQL driver
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+		} catch (InstantiationException e1) {
+			System.err.print("ERROR: The JDBC object could not be instantiated.");
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			System.err.print("ERROR: Access Denied to mySQL. Check Environment.");
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			System.err.print("ERROR: Class does not exist.");
+			e1.printStackTrace();
+		}
 
-        // Connect to the test database
+        // Connect to the database
         while (!loggedIn) {
-//			When this program is run, the user is asked for the the user name and the user password 
-//    		(the database user login info not the password in the above schema) . 
-    		System.out.println("Please enter your username for the database:");
+        	//ASSIGNMENT DESCRIPTION - When this program is run, the user is asked for the the user name and the user password 
+        	//(the database user login info not the password in the above schema) . 
+    		System.out.println("Please enter your username or type \"exit\" to quit (CASE SENSITIVE):");
     		username = in.nextLine();
     		
     		System.out.println("Please enter your password for the database:");
     		password = in.nextLine();
     		
-//    		If all is well, the employee is granted access (and a message to that effect appears 
-//    		on the screen); if access is not allowed, it says why (e.g., the database is 
-//    		not present, the password is wrong). Allow a way for the employee to 
-//    		exit easily.
-	        try{
-	        connection = DriverManager.getConnection("jdbc:mysql:///moviedbw",username, password);
-	        System.out.println("Access granted! Welcome " + username + ".");
-	        loggedIn = true;
-	        Menu();
+    		//ASSIGNMENT DESCRIPTION - If all is well, the employee is granted access (and a message to that effect appears 
+    		//on the screen)
+	        try {
+	        	//ASSIGNMENT DESCRIPTION - Allow a way for the employee to exit easily.
+	        	if (username.equals("exit")) {
+	        		return;
+	        	}
+	        	else {
+			        connection = DriverManager.getConnection("jdbc:mysql:///moviedbw", username, password);
+			        //Assuming no exception is thrown
+			        System.out.println("Access granted. Welcome " + username + ".");
+			        loggedIn = true;
+	        	}
 	        }
-	        catch(SQLException e){
-	        System.out.print("ACCESS DENIED: ");
+	        catch(SQLException e) {; 
+	        //ASSIGNMENT DESCRIPTION - if access is not allowed, it says why (e.g., the database is not present, the password is wrong).
+	        	System.out.print("ACCESS DENIED: ");
 		        switch (e.getErrorCode()) {
 			        case USER_DNE: //Do same things as case: BAD_PASSWORD;
 			        case BAD_PASSWORD: System.out.println("Bad Username/Password."); break;
@@ -75,7 +94,7 @@ private static final int DB_DNE = 1049;
         }
 	}
 	
-	public void Menu() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
+	public void menu() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException
 	{
 		
         if(loggedIn == true)
@@ -120,7 +139,7 @@ private static final int DB_DNE = 1049;
                             System.out.println("Trailer_URL = " + result.getString(6));
                             System.out.println();
                     }
-                    Menu();
+                    menu();
         		}
         		if(oneInput == 2)
         		{
@@ -141,7 +160,7 @@ private static final int DB_DNE = 1049;
                             System.out.println("Trailer_URL = " + result.getString(6));
                             System.out.println();
                     }
-                    Menu();
+                    menu();
         		}
         		if(oneInput == 3)
         		{
@@ -164,7 +183,7 @@ private static final int DB_DNE = 1049;
                             System.out.println("Trailer_URL = " + result.getString(6));
                             System.out.println();
                     }
-                    Menu();
+                    menu();
         		}
         		if(oneInput == 4)
         		{
@@ -185,7 +204,7 @@ private static final int DB_DNE = 1049;
                             System.out.println("Trailer_URL = " + result.getString(6));
                             System.out.println();
                     }
-                    Menu();
+                    menu();
         		}
         		
         	}
@@ -231,7 +250,7 @@ private static final int DB_DNE = 1049;
                 
                 System.out.println("Query has been processed");
                 
-                Menu();
+                menu();
         	}
         	
         	if(userinput == 3)
@@ -257,7 +276,7 @@ private static final int DB_DNE = 1049;
                 if(!result.next())
                 {
                 	System.out.println("Invalid credit card, returning to main menu...");
-                	Menu();
+                	menu();
                 }
                 
     			System.out.println("Enter the address of the customer here (required):");
@@ -281,7 +300,7 @@ private static final int DB_DNE = 1049;
         
                 System.out.println("Query has been processed");
                 
-                Menu();
+                menu();
         	}
         
         if(userinput == 4)
@@ -304,7 +323,7 @@ private static final int DB_DNE = 1049;
                 		+ '"' + firstName + '"' + " AND last_name = " + '"' + lastName + '"' + ";");
                 
                 System.out.println("Query has been processed.");
-                Menu();
+                menu();
     		}
     		if(userSelection == 2)
     		{
@@ -316,7 +335,7 @@ private static final int DB_DNE = 1049;
                 		+ id + ";");
                 
                 System.out.println("Query has been processed.");
-                Menu();
+                menu();
     		}
     		
         }
@@ -402,7 +421,7 @@ private static final int DB_DNE = 1049;
                 		System.out.println(metadata.getColumnName(i) + " = " + result.getString(metadata.getColumnName(i)));
                 	}
                 }
-                Menu();
+                menu();
         	}
         	if(selection == 2)
         	{
@@ -417,7 +436,7 @@ private static final int DB_DNE = 1049;
     	        int rows = updateStars.executeUpdate();
     	        System.out.printf("%d row(s) updated!", rows);
     	        
-    	        Menu();
+    	        menu();
         	}
         	if(selection == 3)
         	{
@@ -433,7 +452,7 @@ private static final int DB_DNE = 1049;
                 
                 //wait 2 seconds
                 Thread.sleep(2000L);
-                Menu();
+                menu();
         	}
         	if(selection == 4)
         	{
@@ -449,7 +468,7 @@ private static final int DB_DNE = 1049;
                 
                 //wait 2 seconds
                 Thread.sleep(2000L);
-                Menu();
+                menu();
         	}
         	
         }

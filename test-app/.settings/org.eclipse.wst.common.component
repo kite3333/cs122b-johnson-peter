@@ -3,6 +3,9 @@
     <wb-module deploy-name="test-app">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="mysql-connector-java-5.1.19-bin.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/test-app/mysql-connector-java-5.1.19-bin.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="test-app"/>
         <property name="java-output-path" value="/test-app/build/classes"/>
     </wb-module>

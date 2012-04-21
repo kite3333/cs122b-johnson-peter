@@ -53,16 +53,15 @@ public class HelloWorld extends HttpServlet {
     // Perform the query
     ResultSet rs = statement.executeQuery(query);
     
-    while(rs.next()){
-    
-    	out.println("Login successful, welcome " + rs.getString("first_name"));
+    if(rs.next()){
+
+    	response.sendRedirect("http://localhost:8080/test-app/main.jsp?email=" + email);
+    	return;
     }
     if(!rs.next())
     {
-    		out.println("Bad login");
-//        String redirectURL = "http://localhost:8080/test-app/index.html?badlogin=true";
-//        response.sendRedirect(redirectURL);
-        
+    		response.sendRedirect("http://localhost:8080/test-app/?login=bad");
+    		return;
     }
     
     }
@@ -90,5 +89,6 @@ public class HelloWorld extends HttpServlet {
 	    {
 		doGet(request, response);
 	    }
+  
   
 }

@@ -10,9 +10,8 @@ java.sql.SQLException,java.sql.Statement"%>
 <p>
 
 <%
-String email = request.getParameter("email");
-String firstName = "";
-String lastName = "";
+String genre = "";
+
 String loginUser = "root";
 String loginPasswd = "";
 String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
@@ -21,22 +20,58 @@ Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)
 // Declare our statement
 Statement statement = dbcon.createStatement();
 
-String query = "SELECT * from customers where email = '" + email + "'" + ";";
+String query = "SELECT * from genres;";
 
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
 
+out.println("<h2>" + "Browse by Category" + "</h2>");
 while(rs.next())
 {
-	firstName = rs.getString("first_name");
-	lastName = rs.getString("last_name");
+	genre = rs.getString("name");
+
+	out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?genre=" 
+			+ genre + '"' + ">"  + genre + "</a>" + "</td>" + "</tr>");
+
 }
 
-out.println("Welcome " + firstName + " " + lastName);
+
+out.println("<h2>" + "Browse by Movie Title" + "<h2>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 0 + '"' + ">"  + 0 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 1 + '"' + ">"  + 1 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 2 + '"' + ">"  + 2 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 3 + '"' + ">"  + 3 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 4 + '"' + ">"  + 4 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 5 + '"' + ">"  + 6 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 7 + '"' + ">"  + 8 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ 9 + '"' + ">"  + 9 + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ "A" + '"' + ">"  + "A" + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ "B" + '"' + ">"  + "B" + "</a>" + "</td>" + "</tr>");
+
+out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" 
+		+ "C" + '"' + ">"  + "C" + "</a>" + "</td>" + "</tr>");
 %>
 
-<a href="http://localhost:8080/test-app/browse.jsp"> Browse Movies</a>
-<a href="http://localhost:8080/test-app/search.jsp"> Search Movies</a>
 
 </p>
 </body></html>

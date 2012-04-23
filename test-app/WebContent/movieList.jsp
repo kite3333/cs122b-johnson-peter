@@ -51,8 +51,13 @@ out.println("<tr>" +
 
 ArrayList checkMovie = new ArrayList();
 String star_list = "";
+ArrayList starlist = new ArrayList();
+
+
+
 while(rs.next())
 {
+
 	int mID = rs.getInt("id");
 	String titleofMovie = rs.getString("title");
 	String year = rs.getString("year");
@@ -64,17 +69,24 @@ while(rs.next())
 	
 	checkMovie.add(titleofMovie);
 	System.out.println("get 0 is " + checkMovie.get(0) + " title is " + titleofMovie);
+	
 	if(checkMovie.get(0).equals(titleofMovie))
 	{
 		System.out.println("we found a same movie " + checkMovie.get(0));
-		star_list += star_fname + " " + star_lname;
-		
-
+		starlist.add(star_fname + " " + star_lname + ", ");
+		continue;
 	}
+	
 	else if(!checkMovie.get(0).equals(titleofMovie))
 	{
 		System.out.println("we found a different movie " + star_list);
-		star_list += star_fname + " " + star_lname;
+		starlist.add(star_fname + " " + star_lname + ", ");
+		
+		for(int i = 0; i < starlist.size(); i++)
+		{
+			star_list += starlist.get(i).toString();
+		}
+		
 		out.println("<tr>" +
             "<td>" + titleofMovie + "</td>" +
             "<td>" + year + "</td>" +
@@ -83,9 +95,12 @@ while(rs.next())
             "<td>" + bannerURL + "</td>" +
             "<td>" + trailerURL + "</td>" +
             "</tr>");
-		star_list = "";
-		checkMovie.clear();
 	}
+
+	System.out.println("star list is now " + star_list);
+	star_list = "";
+	
+	checkMovie.clear();
 }
 	
 

@@ -1,5 +1,5 @@
 <%@ page import ="java.io.*,java.sql.Connection,java.sql.DriverManager,java.sql.ResultSet,
-java.sql.SQLException,java.sql.Statement,java.util.Scanner"%>
+java.sql.SQLException,java.sql.Statement"%>
 
 <!DOCTYPE html>
 <html>
@@ -49,7 +49,11 @@ out.println("<tr>" +
         "<td>" + "Trailer URL" + "</td>" +
         "</tr>");
 
+ArrayList checkMovie = new ArrayList();
+String star_list = "";
+ArrayList starlist = new ArrayList();
 
+int check = 0;
 
 while(rs.next())
 {
@@ -60,11 +64,8 @@ while(rs.next())
 	String director = rs.getString("director");
 	String bannerURL = rs.getString("banner_url");
 	String trailerURL = rs.getString("trailer_url");
-
 	String stars = rs.getString("group_concat(distinct a.first_name, ' ', a.last_name separator ', ')");
 	String genres = rs.getString("group_concat(distinct g.name separator ', ')");
-	
-
 	
 
 		out.println("<tr>" +
@@ -78,7 +79,7 @@ while(rs.next())
             "</tr>");
 
 
-
+}
 	
 
 
@@ -87,7 +88,7 @@ out.println("</TABLE>");
 
 
 
-}
+
 
 %>
 

@@ -24,8 +24,8 @@ Statement statement = dbcon.createStatement();
 String query = "";
 if(genre != null)
 {
-	query = "select * from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE g.name = " + "'" + 
-			genre + "'" + "ORDER BY m.title";
+	query = "select m.title, m.year, m.director, m.banner_url, m.trailer_url, g.name, group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
+			+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title;";
 }
 
 if(title != null)
@@ -53,54 +53,30 @@ ArrayList checkMovie = new ArrayList();
 String star_list = "";
 ArrayList starlist = new ArrayList();
 
-
+int check = 0;
 
 while(rs.next())
 {
 
-	int mID = rs.getInt("id");
+
 	String titleofMovie = rs.getString("title");
 	String year = rs.getString("year");
 	String director = rs.getString("director");
 	String bannerURL = rs.getString("banner_url");
 	String trailerURL = rs.getString("trailer_url");
-	String star_fname = rs.getString("first_name");
-	String star_lname = rs.getString("last_name");
+	String stars = rs.getString("group_concat(distinct a.first_name, ' ', a.last_name separator ', ')");
 	
-	checkMovie.add(titleofMovie);
-	System.out.println("get 0 is " + checkMovie.get(0) + " title is " + titleofMovie);
 	
-	if(checkMovie.get(0).equals(titleofMovie))
-	{
-		System.out.println("we found a same movie " + checkMovie.get(0));
-		starlist.add(star_fname + " " + star_lname + ", ");
-		continue;
-	}
-	
-	else if(!checkMovie.get(0).equals(titleofMovie))
-	{
-		System.out.println("we found a different movie " + star_list);
-		starlist.add(star_fname + " " + star_lname + ", ");
-		
-		for(int i = 0; i < starlist.size(); i++)
-		{
-			star_list += starlist.get(i).toString();
-		}
 		
 		out.println("<tr>" +
             "<td>" + titleofMovie + "</td>" +
             "<td>" + year + "</td>" +
             "<td>" + director + "</td>" +
-            "<td>" + star_list + "</td>" +
+            "<td>" + stars + "</td>" +
             "<td>" + bannerURL + "</td>" +
             "<td>" + trailerURL + "</td>" +
             "</tr>");
-	}
 
-	System.out.println("star list is now " + star_list);
-	star_list = "";
-	
-	checkMovie.clear();
 }
 	
 

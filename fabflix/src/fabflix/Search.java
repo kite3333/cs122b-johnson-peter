@@ -68,7 +68,7 @@ public class Search extends HttpServlet {
 		    Statement statement = dbcon.createStatement();
 		    
 			//Build MySQL query
-		    selectBuilder.append("SELECT * FROM movies");
+		    selectBuilder.append("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url FROM movies");
 		    if ( !(title.isEmpty() && year.isEmpty() && director.isEmpty() && actorFName.isEmpty() && actorLName.isEmpty() ) ) {
 		    	clauseBuilder.append(" WHERE");
 		    	if (!title.isEmpty()) {
@@ -106,7 +106,7 @@ public class Search extends HttpServlet {
 		    	}
 		    	if (!actorLName.isEmpty() || !actorFName.isEmpty()) {
 		    		selectBuilder.append(", stars, stars_in_movies");
-		    		clauseBuilder.append(" AND stars.id = stars_in_movies.star_id AND movie_id = stars_in_movies.movie_id");
+		    		clauseBuilder.append(" AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id");
 		    	}
 		    }
 		    query = selectBuilder.toString() + clauseBuilder.toString() + ";";
@@ -115,7 +115,11 @@ public class Search extends HttpServlet {
 
 		    // Perform the query
 		    ResultSet rs = statement.executeQuery(query);
+		    
+		    // Print results page
+		    out.println(ServletUtilities.headWithTitle("Results"));
 		    ServletUtilities.printResults(rs, out);
+		    out.println(ServletUtilities.pageEnd());
 		    
 		    //Close objects
 		    rs.close();

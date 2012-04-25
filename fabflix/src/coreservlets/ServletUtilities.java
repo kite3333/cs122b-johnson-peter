@@ -9,11 +9,19 @@ import javax.servlet.http.*;
 /** Some simple time savers. Static methods. */
 
 public class ServletUtilities {
-  public static String headWithTitle(String title) {
-    return("<!DOCTYPE html>\n" +
-           "<html>\n" +
-           "<head><title>" + title + "</title></head>\n");
+	
+	public static String headWithTitle(String title) {
+		String topPart = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">" +
+	    		"\n<html>";
+	    String head = "\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">" +
+    		"<link rel=\"stylesheet\" href=\"./css/styles.css\" type=\"text/css\"/>\n<title>" + title + "</title>" + 
+    		"\n</head>\n<body>";
+      return topPart + head;
   }
+	
+	public static String pageEnd() {
+		return "</body>\n</html>";
+	}
 
   /** Read a parameter with the specified name, convert it
    *  to an int, and return it. Return the designated default
@@ -25,13 +33,13 @@ public class ServletUtilities {
 		if (result.next()) {
 			result.beforeFirst();
 			while (result.next()) {
-			    out.println("<p>Movie Id: " + result.getInt(1) + "</p>");
-			    out.println("<p>Title: " + result.getString(2) + "</p>");
-			    out.println("<p>Year: " + result.getInt(3) + "</p>");
-			    out.println("<p>Director: " + result.getString(4) + "</p>");
-			    out.println("<p>Banner URL: " + result.getString(5) + "</p>");
-			    out.println("<p>Trailer URL: " + result.getString(6) + "</p>");
-			    out.println();
+			    out.println("<b>Movie Id:</b> " + result.getInt(1) + "<br />");
+			    out.println("<b>Title:</b> " + result.getString(2) + "<br />");
+			    out.println("<b>Year:</b> " + result.getInt(3) + "<br />");
+			    out.println("<b>Director:</b> " + result.getString(4) + "<br />");
+			    out.println("<b>Banner URL:</b> " + result.getString(5) + "<br />");
+			    out.println("<b>Trailer URL:</b> " + result.getString(6) + "<br />");
+			    out.println("<br />");
 			}
 		} else {
 			System.out.println("<p>No Results.</p>");

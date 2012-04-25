@@ -35,8 +35,8 @@ while(rs.next())
 out.println("Welcome " + firstName + " " + lastName);
 %>
 
-<a href="http://localhost:8080/test-app/browse.jsp"> Browse Movies</a>
-<a href="http://localhost:8080/test-app/search.jsp"> Search Movies</a>
+<a href="http://localhost:8080/FabFlix/browse.jsp"> Browse Movies</a>
+<a href="http://localhost:8080/FabFlix/search.jsp"> Search Movies</a>
 
 </p>
 </body></html>

@@ -55,12 +55,12 @@ public class HelloWorld extends HttpServlet {
     
     if(rs.next()){
 
-    	response.sendRedirect("http://localhost:8080/test-app/main.jsp?email=" + email);
+    	response.sendRedirect("http://localhost:8080/FabFlix/main.jsp?email=" + email);
     	return;
     }
     if(!rs.next())
     {
-    		response.sendRedirect("http://localhost:8080/test-app/?login=bad");
+    		response.sendRedirect("http://localhost:8080/FabFlix/?login=bad");
     		return;
     }
     

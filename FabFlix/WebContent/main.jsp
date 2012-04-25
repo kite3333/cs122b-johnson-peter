@@ -3,9 +3,9 @@ java.sql.SQLException,java.sql.Statement"%>
 
 <!DOCTYPE html>
 <html>
-<head><title>Fabflix Main Page - Searching</title></head>
+<head><title>Sample JSP Page</title></head>
 <body>
-<h1>Fabflix Main Page - Searching</h1>
+<h1>Fabflix Main Page</h1>
 <%@ page import="java.util.*" %>
 <p>
 
@@ -35,7 +35,7 @@ while(rs.next())
 out.println("Welcome " + firstName + " " + lastName);
 %>
 
-<a href="http://localhost:8080/test-app/browse.jsp"> Browse Movies</a>
+<a href="http://localhost:8080/test-app/browse.jsp"> Browse Movies</a> <br>
 <a href="http://localhost:8080/test-app/search.jsp"> Search Movies</a>
 
 </p>

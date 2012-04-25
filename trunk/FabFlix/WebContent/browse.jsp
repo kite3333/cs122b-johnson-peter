@@ -46,8 +46,6 @@ for (int i = 0; i <= 9; i++) {
 for (int i = 65; i <= 90; i++) {
 	out.print("<a href = \"../FabFlix/movieList.jsp?title=" + (char) i + "\">" + (char) i + "</a>  ||  ");
 }
- out.println("<tr> + <td>" + "<a href = " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?title=" 
- 		+ "A" + '"' + ">"  + "A" + "</a>" + "</td>" + "</tr>");
 
 
 %>

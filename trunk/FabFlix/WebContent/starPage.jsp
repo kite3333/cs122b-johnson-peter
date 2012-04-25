@@ -78,7 +78,7 @@ while(rs.next())
     if(count == 0)
     {
     	movie_copy = movie_copy.trim();
-    	j += "<a href= " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" + movie_copy + '"' + ">" + movie_copy + "</a>";
+    	j += "<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?title=" + movie_copy + '"' + ">" + movie_copy + "</a>";
     }
     
     if(count != 0)
@@ -86,13 +86,13 @@ while(rs.next())
     for(int i = 0; i < count; i++)
 	{
 		int l = movie_copy.indexOf(",");
-		j += "<a href= " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" + movie_copy.substring(0, l) + '"' + ">" + movie_copy.substring(0, l) + "</a>" + ", ";
+		j += "<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?title=" + movie_copy.substring(0, l) + '"' + ">" + movie_copy.substring(0, l) + "</a>" + ", ";
 		movie_copy = movie_copy.substring(l+2);
 		System.out.println("star_copy is now " + movie_copy);
 	}
     //we take the last one too
     movie_copy = movie_copy.trim();
-    j += "<a href= " + '"' + "http://localhost:8080/test-app/movieList.jsp?title=" + movie_copy + '"' + ">" + movie_copy + "</a>" ;
+    j += "<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?title=" + movie_copy + '"' + ">" + movie_copy + "</a>" ;
     }
 	
 

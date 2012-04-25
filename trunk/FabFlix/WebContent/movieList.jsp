@@ -86,7 +86,7 @@ while(rs.next())
     System.out.println("star_copy is now " + star_copy);
     if(count == 0)
     {
-    	j += "<a href= " + '"' + "http://localhost:8080/test-app/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>";
+    	j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>";
     }
     
     if(count != 0)
@@ -94,12 +94,12 @@ while(rs.next())
     for(int i = 0; i < count; i++)
 	{
 		int l = star_copy.indexOf(",");
-		j += "<a href= " + '"' + "http://localhost:8080/test-app/starPage.jsp?star=" + star_copy.substring(0, l) + '"' + ">" + star_copy.substring(0, l) + "</a>" + ", ";
+		j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy.substring(0, l) + '"' + ">" + star_copy.substring(0, l) + "</a>" + ", ";
 		star_copy = star_copy.substring(l+2);
 		System.out.println("star_copy is now " + star_copy);
 	}
     //we take the last one too
-    j += "<a href= " + '"' + "http://localhost:8080/test-app/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>" ;
+    j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>" ;
     }
 
 		out.println("<tr>" +

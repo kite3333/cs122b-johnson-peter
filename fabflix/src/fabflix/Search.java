@@ -46,22 +46,16 @@ public class Search extends HttpServlet {
 		String director = request.getParameter("director");
 		String actorFName = request.getParameter("actor_first");
 		String actorLName = request.getParameter("actor_last");
+		
+		//Query Variables
 		StringBuilder selectBuilder = new StringBuilder();
 		StringBuilder clauseBuilder = new StringBuilder();
-		
 		boolean useAnd = false;
+		String query = null;
 		
 		//Prints to client
 		PrintWriter out = response.getWriter();
-		
-//		System.out.println("Title: " + title);
-//		System.out.println("Year: " + year);
-//		System.out.println("Director: " + director);
-//		System.out.println("Actor First Name: " + actorFName);
-//		System.out.println("Actor Last Name: " + actorLName);
-		
-		String query = null;
-		
+			
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
@@ -137,7 +131,7 @@ public class Search extends HttpServlet {
 			out.println("Sorry, looks like Fabflix has a problem. The JBDC class wasn't found.");
 			e.printStackTrace();
 		} catch (SQLException e) {
-			out.println("The SQL query failed. Attempted Query: " + query);
+			out.println("The database query failed. Please notify the site administrator.");
 			e.printStackTrace();
 		}
 		

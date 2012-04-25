@@ -33,16 +33,16 @@ public class ServletUtilities {
 		if (result.next()) {
 			result.beforeFirst();
 			while (result.next()) {
+			    out.println("<img src=\"" + result.getString(5) + "\"><br />");
 			    out.println("<b>Movie Id:</b> " + result.getInt(1) + "<br />");
 			    out.println("<b>Title:</b> " + result.getString(2) + "<br />");
 			    out.println("<b>Year:</b> " + result.getInt(3) + "<br />");
 			    out.println("<b>Director:</b> " + result.getString(4) + "<br />");
-			    out.println("<b>Banner URL:</b> " + result.getString(5) + "<br />");
 			    out.println("<b>Trailer URL:</b> " + result.getString(6) + "<br />");
 			    out.println("<br />");
 			}
 		} else {
-			System.out.println("<p>No Results.</p>");
+			out.println("<p>No Results.</p>");
 		}
 	}
   

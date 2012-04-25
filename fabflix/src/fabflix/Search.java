@@ -118,6 +118,7 @@ public class Search extends HttpServlet {
 		    
 		    // Print results page
 		    out.println(ServletUtilities.headWithTitle("Results"));
+		    out.println("<h1>Search Results</h1>");
 		    ServletUtilities.printResults(rs, out);
 		    out.println(ServletUtilities.pageEnd());
 		    

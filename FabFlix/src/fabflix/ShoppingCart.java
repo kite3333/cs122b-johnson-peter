@@ -1,21 +1,22 @@
 package fabflix;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class ShoppingCart {
 
 	//Stores the items. Key = Movie ID, Value = Quantity.
 	private HashMap<Integer, Item> cart;
-	private int customerID;
+	private String customerID;
 	
-	public ShoppingCart(int custID) {
+	public ShoppingCart(String custID) {
 		customerID = custID;
 		cart = new HashMap<Integer, Item>();
 	}
 	
 	public void addItem(String title, int movieID, int quantity) {
 		if (cart.containsKey(movieID)) { //Add quantity to existing item
-			cart.get(movieID).quantity += quantity;
+			cart.get(movieID).setQuant(cart.get(movieID).getQuant() + quantity);
 		}
 		else { //Insert new item
 			cart.put(movieID, new Item(title, movieID, quantity));
@@ -26,6 +27,10 @@ public class ShoppingCart {
 		addItem(title, movieID, 1);
 	}
 	
+	public void addItem(Item newItem) {
+		cart.put(newItem.getID(), newItem);
+	}
+	
 	//Removes item from cart completely. To change quantity, see updateItem
 	public void removeItem(int movieID) {
 		cart.remove(movieID);
@@ -34,7 +39,7 @@ public class ShoppingCart {
 	public void updateItem(int movieID, int newQuant) {
 		if (cart.containsKey(movieID)) {
 			if (newQuant > 0) {
-				cart.get(movieID).quantity = newQuant;
+				cart.get(movieID).setQuant(newQuant);
 			}
 			else {
 				cart.remove(movieID);
@@ -46,6 +51,14 @@ public class ShoppingCart {
 		return cart.size();
 	}
 	
+	public Set<Integer> getMovieIDs() {
+		return cart.keySet();
+	}
+	
+	public String getCustID() {
+		return customerID;
+	}
+	
 	//Returns Item or null identified by movieID
 	public Item getItem(int movieID) {
 		return cart.get(movieID);
@@ -55,8 +68,8 @@ public class ShoppingCart {
 	public String makeSQLQuery(int movieID) {
 		if (cart.containsKey(movieID)) {
 			return ("INSERT INTO shoppingcarts (custID, movieID, title, quant)"
-				+ "VALUES(" + customerID + ", " + movieID + ", '" + cart.get(movieID).title
-				+ "', " + cart.get(movieID).quantity);
+				+ "VALUES(" + customerID + ", " + movieID + ", '" + cart.get(movieID).getTitle()
+				+ "', " + cart.get(movieID).getQuant());
 		}
 		else {
 			return null; //WARNING: Might lead to null errors

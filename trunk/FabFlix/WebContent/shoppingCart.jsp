@@ -1,4 +1,5 @@
 <%@ page import = "java.util.PriorityQueue,
+	java.util.Enumeration,
 	coreservlets.ServletUtilities,
 	fabflix.ShoppingCart,
 	fabflix.Item"
@@ -12,9 +13,9 @@
 	if (custID == null || cart == null) {
 		out.println("<p align=\"center\">Your Cart is Empty</p>");
 	}
-	else { 
+	else {
 %>
-<form>
+<form method="post">
 	<table border="1">
 	<tr>
 		<th>ID</th>
@@ -22,6 +23,18 @@
 		<th>Quantity</th>
 	</tr>
 <%
+		Enumeration<String> parameters = request.getParameterNames();
+		String nextID = null;
+		while (parameters.hasMoreElements()) {
+			nextID = parameters.nextElement();
+			if (request.getParameter(nextID) == null || //No quantity value or value <= 0
+					Integer.parseInt(request.getParameter(nextID)) <= 0 ) {
+				cart.removeItem(Integer.parseInt(nextID)); //Delete item from cart.
+			}
+			else { //update the quantity for that time
+				cart.getItem(Integer.parseInt(nextID)).setQuant(Integer.parseInt(request.getParameter(nextID)));
+			}
+		}
 		Item item = null;
 		PriorityQueue<Integer> pq = new PriorityQueue<Integer>(cart.getMovieIDs());
 		while (!pq.isEmpty()) {

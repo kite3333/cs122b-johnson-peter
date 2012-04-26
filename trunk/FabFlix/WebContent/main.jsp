@@ -33,7 +33,7 @@ else {
 }
 
 out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
-
+System.out.println(custID);
 //Does a session already exist and is not the same customer?
 if (!session.isNew() && !custID.equals(session.getAttribute("custID"))) {
 	session = request.getSession(true);

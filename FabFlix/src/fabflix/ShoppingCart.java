@@ -1,0 +1,85 @@
+package fabflix;
+
+import java.util.HashMap;
+
+public class ShoppingCart {
+
+	//Stores the items. Key = Movie ID, Value = Quantity.
+	private HashMap<Integer, Item> cart;
+	private int customerID;
+	
+	class Item {
+		public String title; //Included for user ease of reading (vs ID).
+		public int id;
+		public int quantity;
+		
+		public Item(String newTitle, int newID, int newQuant) {
+			title = newTitle;
+			id = newID;
+			quantity = newQuant;
+		}
+		
+	}
+	
+	public ShoppingCart(int custID) {
+		customerID = custID;
+		cart = new HashMap<Integer, Item>();
+	}
+	
+	public void addItem(String title, int movieID, int quantity) {
+		if (cart.containsKey(movieID)) { //Add quantity to existing item
+			cart.get(movieID).quantity += quantity;
+		}
+		else { //Insert new item
+			cart.put(movieID, new Item(title, movieID, quantity));
+		}
+	}
+	
+	public void addItem(String title, int movieID) {
+		addItem(title, movieID, 1);
+	}
+	
+	//Removes item from cart completely. To change quantity, see updateItem
+	public void removeItem(int movieID) {
+		cart.remove(movieID);
+	}
+	
+	public void updateItem(int movieID, int newQuant) {
+		if (cart.containsKey(movieID)) {
+			if (newQuant > 0) {
+				cart.get(movieID).quantity = newQuant;
+			}
+			else {
+				cart.remove(movieID);
+			}
+		} //WARNING: NO notification if condition fails
+	}
+	
+	
+	//Makes an INSERT query for one cart item.
+	public String makeQuery(int movieID) {
+		if (cart.containsKey(movieID)) {
+			return ("INSERT INTO shoppingcarts (custID, movieID, title, quant)"
+				+ "VALUES(" + customerID + ", " + movieID + ", '" + cart.get(movieID).title
+				+ "', " + cart.get(movieID).quantity);
+		}
+		else {
+			return null; //WARNING: Might lead to null errors
+		}
+	}
+	
+	//For inserting a shopping cart into the database. Returns null if the cart is empty.
+	public String[] makeQueryArray() {
+		String[] queries = null;
+		if (cart.size() > 0) {
+			queries = new String[cart.size()];
+			//I want an array so that I can iterate using int i
+			Integer[] movieIDs = cart.keySet().toArray(new Integer[0]);
+			for (int i = 0; i < movieIDs.length; i++) {
+				queries[i] = makeQuery(movieIDs[i].intValue());
+			}
+		}
+		return queries;
+	}
+	
+}

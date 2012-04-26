@@ -1,5 +1,5 @@
 <%@ page language="java" 
-	import ="coreservlets.ServletUtilities" 
+	import = "coreservlets.ServletUtilities" 
 %>
 <%
 ServletUtilities.headWithTitle("FabFlix - Search");

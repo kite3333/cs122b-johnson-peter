@@ -51,10 +51,9 @@ if (custID != null && email != null) {//previous session exists and login entere
 		session.setAttribute("cart", new ShoppingCart(custID));
 	}
 }
-System.out.println(custID);
 out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
 %>
-<jsp:include page="./fakeCart.jsp"></jsp:include>
+<jsp:include page="./fakeCart.jsp"></jsp:include> <!-- FOR TESTING ONLY!! REMOVE FROM FINAL -->
 <a href="./browse.jsp">Browse the Movie Database</a><br />
 <a href="./search.jsp">Search the Movie Database</a>
 <% out.println(ServletUtilities.pageEnd()); %>

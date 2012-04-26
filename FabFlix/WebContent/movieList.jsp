@@ -18,13 +18,15 @@ String genre = request.getParameter("genre");
 String titleStart = request.getParameter("titleStart");
 
 //Pagination Variables
-int pageNum = 1; //Use given pageNum if available and positive. Default is 1.
+int pageNum = 1; //Use given if available and positive. Default is 1.
 if (request.getParameter("pageNum") != null && Integer.parseInt(request.getParameter("pageNum")) > 0) {
 	pageNum = Integer.parseInt(request.getParameter("pageNum"));
 }
-int limit = 10; //NEEDS TO BE BASED ON GIVEN
+int limit = 10; //Use given if available and positive. Default is 10.
+if (request.getParameter("pageSize") != null && Integer.parseInt(request.getParameter("pageSize")) > 0) {
+	limit = Integer.parseInt(request.getParameter("pageSize"));
+}
 int offset = (pageNum - 1) * limit;
-int pageSize = 0;
 String urlParameters = null;
 
 //Search Variables
@@ -60,9 +62,9 @@ if(titleStart != null)
 }
 
 //Previous Page Link
-out.println("<a href=\"./movieList.jsp?" + urlParameters + (pageNum - 1) + '"' + ">Prev</a> || ");
+out.println("<a href=\"./movieList.jsp?" + urlParameters + (pageNum - 1) + "&pageSize=" + limit + "\">Prev</a> || ");
 //Next Page Link
-out.println("<a href=\"./movieList.jsp?" + urlParameters + (pageNum + 1) + '"' + ">Next</a><br />");
+out.println("<a href=\"./movieList.jsp?" + urlParameters + (pageNum + 1) + "&pageSize=" + limit + "\">Next</a><br />");
 
 urlParameters += pageNum; //pageNum no longer varies so combine with urlParameters
 out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=10\">10</a>");
@@ -73,21 +75,6 @@ out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=100\">100<
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 // Declare our statement
 Statement statement = dbcon.createStatement();
-
-Integer s = null;
-try { 
-	pageSize = Integer.parseInt(request.getParameter("pageSize"));
-	  s = Integer.valueOf(pageSize);
-	}
-	catch (NumberFormatException e) {
-	  // ...
-	}
-if (s != null) { 
-	limit = pageSize; 
-	offset = pageNum * limit;
-}
-
-
 
 //Browse overrides Search
 if (genre != null || titleStart != null) { //Make Browse Query

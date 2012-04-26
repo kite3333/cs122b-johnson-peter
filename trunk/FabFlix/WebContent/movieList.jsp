@@ -16,20 +16,43 @@ out.println("Page " + pageNum);
 out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Previous" + "&pageNum=" + pageNum + '"' + ">" + "Previous" + "</a>" + " || ");
 out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Next" + "&pageNum=" + pageNum + '"' + ">" + "Next" + "</a>");
 
+
 out.println("<p>");
-out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum + '"' + ">" + 10 + "</a>");
-out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "25" + "&pageNum=" + pageNum + '"' + ">" + 25 + "</a>");
-out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "50" + "&pageNum=" + pageNum + '"' + ">" + 50 + "</a>");
-out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "100" + "&pageNum=" + pageNum + '"' + ">" + 100 + "</a>");
-out.println(ServletUtilities.headWithTitle("Results List"));
+
+
 
 //Browse Variables
 String genre = request.getParameter("genre");
 String titleStart = request.getParameter("titleStart");
 
+if(genre != null)
+{
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 10 + "</a>");
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "25" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 25 + "</a>");
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "50" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 50 + "</a>");
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "100" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 100 + "</a>");	
+	
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum  + "&genre=" + genre + "&page=" + "Next" + '"' + ">" + "Next" + "</a>");
+}
+if(titleStart != null)
+{
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 10 + "</a>");
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "25" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 25 + "</a>");
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "50" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 50 + "</a>");
+	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "100" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 100 + "</a>");	
+}
+
+
+out.println(ServletUtilities.headWithTitle("Results List"));
+
 //Pagination Variables
-int limit = 10;
-int offset = 20;
+if(request.getParameter("page") == "Next")
+{
+	pageNum++;
+}
+
+int limit = 20;
+int offset = pageNum * limit;
 
 int pageSize = 0;
 
@@ -62,23 +85,39 @@ try {
 	catch (NumberFormatException e) {
 	  // ...
 	}
-if (s != null) { offset = pageSize; }
+if (s != null) { 
+	limit = pageSize; 
+offset = pageNum * limit;}
 
 
 
 //Browse overrides Search
 
 if (genre != null || titleStart != null) { //Make Browse Query
-	if(genre != null)
+	try{
+	if(genre != null && genre != "null")
 	{
 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
-				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title LIMIT " + limit + " OFFSET " + offset + ";";
+				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title LIMIT " + limit + " OFFSET " + 0 + ";";
+				
+				System.out.println("pagenum is " + pageNum);
+				
 	}
 	
-	if(titleStart != null)
+	else if(titleStart != null && titleStart != "null")
 	{
-		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.title;";	
+		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.title"
+				+ " LIMIT " + limit + " OFFSET " + 0 + ";";	
+		System.out.println("we are in the title loop");
+		System.out.println("limit is " + limit);
+		System.out.println("title is " + titleStart);
+		
 	}
+	}
+catch(NullPointerException e)
+{
+	
+}
 }
 else { //Make Search Query
 	selectBuilder.append("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url FROM movies");
@@ -174,9 +213,9 @@ while(rs.next())
     }
     
     
-    System.out.println("count is now " + count);
+/*     System.out.println("count is now " + count);
 	
-    System.out.println("star_copy is now " + star_copy);
+    System.out.println("star_copy is now " + star_copy); */
     if(count == 0)
     {
     	j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>";
@@ -189,7 +228,7 @@ while(rs.next())
 		int l = star_copy.indexOf(",");
 		j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy.substring(0, l) + '"' + ">" + star_copy.substring(0, l) + "</a>" + ", ";
 		star_copy = star_copy.substring(l+2);
-		System.out.println("star_copy is now " + star_copy);
+		/* System.out.println("star_copy is now " + star_copy); */
 	}
     //we take the last one too
     j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>" ;

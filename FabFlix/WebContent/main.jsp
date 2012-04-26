@@ -20,7 +20,7 @@ Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)
 Statement statement = dbcon.createStatement();
 String query = "SELECT * FROM customers WHERE email = '" + request.getParameter("email") + "'"
 	+ " AND password = '" + request.getParameter("password") + "';";
-System.out.println(query);
+
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
 

@@ -1,12 +1,22 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Index</title>
-</head>
-<body>
-<a href="search.jsp">Search</a>
-</body>
-</html>
+<%@ page import = "coreservlets.ServletUtilities" %>
+<% out.print(ServletUtilities.headWithTitle("Fabflix - Login")); %>
+<table class="title">
+  <tr><th>Fabflix</th></tr>
+</table>
+
+<%
+if (request.getParameter("login").equals("bad")) {
+%>
+	<h2>Sorry!</h2>
+	<p>Your login name and/or password was invalid. Please try again.</p>
+<%
+}
+%>
+<FORM ACTION="hello"
+      METHOD="GET">
+  Email: <INPUT TYPE="TEXT" NAME="email" value="lind@yahoo.com"><br />
+  Password: <INPUT TYPE="PASSWORD" NAME="password" value="pw17"><br />
+  <INPUT TYPE="SUBMIT" VALUE="Login">
+</FORM>
+
+<% out.println(ServletUtilities.pageEnd()); %>

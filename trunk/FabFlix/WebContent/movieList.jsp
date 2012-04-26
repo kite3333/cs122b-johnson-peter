@@ -1,15 +1,8 @@
 <%@ page import ="java.io.*,java.sql.Connection,java.sql.DriverManager,java.sql.ResultSet,
-java.sql.SQLException,java.sql.Statement,java.util.Scanner"%>
-
-<!DOCTYPE html>
-<html>
-<head><title>Fabflix Main Page - Browsing</title></head>
-<body>
-<h1>Fabflix Main Page - Browsing</h1>
-<%@ page import="java.util.*" %>
-<p>
+java.sql.SQLException,java.sql.Statement,java.util.Scanner, java.util.*, coreservlets.ServletUtilities"%>
 
 <%
+ServletUtilities.headWithTitle("Results List");
 String genre = request.getParameter("genre");
 String title = request.getParameter("title");
 
@@ -37,23 +30,23 @@ if(title != null)
 
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
+%>
 
-out.println("<h2>" + "Results" + "</h2>");
+<h1>Fabflix Main Page - Browsing</h1>
+<h2>Results</h2>
+<TABLE border="1">
+<tr>
+	<td>ID</td>
+	<td>Title</td>
+	<td>Year</td>
+	<td>Director</td>
+	<td>Stars</td>
+	<td>Genres</td>
+	<td>Banner URL</td>
+	<td>Trailer URL</td>
+</tr>
 
-out.println("<TABLE border>");
-out.println("<tr>" +
-        "<td>" + "ID" + "</td>" +
-        "<td>" + "Title" + "</td>" +
-        "<td>" + "Year" + "</td>" +
-        "<td>" + "Director" + "</td>" +
-        "<td>" + "Stars" + "</td>" +
-        "<td>" + "Genres" + "</td>" +
-        "<td>" + "Banner URL" + "</td>" +
-        "<td>" + "Trailer URL" + "</td>" +
-        "</tr>");
-
-
-
+<%
 while(rs.next())
 {
 
@@ -118,14 +111,6 @@ while(rs.next())
 	
 
 }
-
-out.println("</TABLE>");
-
-
-
-
 %>
-
-
-</p>
+</TABLE>
 </body></html>

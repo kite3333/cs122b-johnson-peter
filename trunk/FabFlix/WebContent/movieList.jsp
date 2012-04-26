@@ -11,50 +11,21 @@
 %>
 
 <%
-int pageNum = 1;
-out.println("Page " + pageNum);
-out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Previous" + "&pageNum=" + pageNum + '"' + ">" + "Previous" + "</a>" + " || ");
-out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Next" + "&pageNum=" + pageNum + '"' + ">" + "Next" + "</a>");
-
-
-out.println("<p>");
-
-
+//-------VARIABLES------//
 
 //Browse Variables
 String genre = request.getParameter("genre");
 String titleStart = request.getParameter("titleStart");
 
-if(genre != null)
-{
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 10 + "</a>");
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "25" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 25 + "</a>");
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "50" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 50 + "</a>");
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "100" + "&pageNum=" + pageNum  + "&genre=" + genre + '"' + ">" + 100 + "</a>");	
-	
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum  + "&genre=" + genre + "&page=" + "Next" + '"' + ">" + "Next" + "</a>");
-}
-if(titleStart != null)
-{
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 10 + "</a>");
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "25" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 25 + "</a>");
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "50" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 50 + "</a>");
-	out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "100" + "&pageNum=" + pageNum + "&titleStart=" + titleStart +  '"' + ">" + 100 + "</a>");	
-}
-
-
-out.println(ServletUtilities.headWithTitle("Results List"));
-
 //Pagination Variables
-if(request.getParameter("page") == "Next")
-{
-	pageNum++;
+int pageNum = 1; //Use given pageNum if available and positive. Default is 1.
+if (request.getParameter("pageNum") != null && Integer.parseInt(request.getParameter("pageNum")) > 0) {
+	pageNum = Integer.parseInt(request.getParameter("pageNum"));
 }
-
-int limit = 20;
-int offset = pageNum * limit;
-
+int limit = 10; //NEEDS TO BE BASED ON GIVEN
+int offset = (pageNum - 1) * limit;
 int pageSize = 0;
+String urlParameters = null;
 
 //Search Variables
 String inTitle = request.getParameter("title");
@@ -69,9 +40,35 @@ StringBuilder clauseBuilder = new StringBuilder();
 boolean useAnd = false;
 String query = null;
 
+//Database Variables
 String loginUser = "root";
 String loginPasswd = "";
 String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
+
+//-------END VARIABLES------//
+
+out.println(ServletUtilities.headWithTitle("Results List"));
+out.println("Page " + pageNum);
+
+if(genre != null)
+{
+	urlParameters = "genre=" + genre + "&pageNum=";
+}
+if(titleStart != null)
+{
+	urlParameters = "titleStart=" + titleStart + "&pageNum=";
+}
+
+//Previous Page Link
+out.println("<a href=\"./movieList.jsp?" + urlParameters + (pageNum - 1) + '"' + ">Prev</a> || ");
+//Next Page Link
+out.println("<a href=\"./movieList.jsp?" + urlParameters + (pageNum + 1) + '"' + ">Next</a><br />");
+
+urlParameters += pageNum; //pageNum no longer varies so combine with urlParameters
+out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=10\">10</a>");
+out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=25\">25</a>");
+out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=50\">50</a>");
+out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=100\">100</a>");	
 
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 // Declare our statement
@@ -87,33 +84,34 @@ try {
 	}
 if (s != null) { 
 	limit = pageSize; 
-offset = pageNum * limit;}
+	offset = pageNum * limit;
+}
 
 
 
 //Browse overrides Search
-
 if (genre != null || titleStart != null) { //Make Browse Query
 	try{
-	if(genre != null && genre != "null")
+	if(genre != null)
 	{
 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
 				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title LIMIT " + limit + " OFFSET " + 0 + ";";
 				
 				System.out.println("pagenum is " + pageNum);
-				
+		
 	}
 	
-	else if(titleStart != null && titleStart != "null")
+	else if(titleStart != null)
 	{
 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.title"
-				+ " LIMIT " + limit + " OFFSET " + 0 + ";";	
+				+ " LIMIT " + limit + " OFFSET " + offset + ";";	
 		System.out.println("we are in the title loop");
 		System.out.println("limit is " + limit);
+		System.out.println("offset is " + offset);
 		System.out.println("title is " + titleStart);
 		
 	}
-	}
+}
 catch(NullPointerException e)
 {
 	

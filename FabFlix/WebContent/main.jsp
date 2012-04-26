@@ -8,41 +8,51 @@
 %>
 <%
 out.print(ServletUtilities.headWithTitle("Fabflix Main"));
-String firstName = null;
-String lastName = null;
+
+//Database Variables
 String loginUser = "root";
 String loginPasswd = "";
 String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
-String custID = null;
 
+//Customer Variables
+String firstName = (String) session.getAttribute("firstName");
+String lastName = (String) session.getAttribute("lastName");
+String custID = (String) session.getAttribute("custID");
+String email = request.getParameter("email");
+
+//Connect to DB
 Class.forName("com.mysql.jdbc.Driver").newInstance();
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 Statement statement = dbcon.createStatement();
 
 // Perform the query
-ResultSet rs = statement.executeQuery("SELECT first_name, last_name, id FROM customers WHERE email = '" + 
-	request.getParameter("email") + "' AND password = '" + request.getParameter("password") + "';");
-
-if (rs.next()) {
-	firstName = rs.getString("first_name");
-	lastName = rs.getString("last_name");
-	custID = rs.getString("id");
-} 
-else {
-	response.sendRedirect("./index.jsp?login=bad");
+ResultSet rs = null;
+if (custID == null && email == null) { //No login entered and no user logged in
+	response.sendRedirect("./index.jsp");
+} else if (email != null) { //Query for user if login entered
+	rs = statement.executeQuery("SELECT first_name, last_name, id FROM customers WHERE email = '" + 
+		email + "' AND password = '" + request.getParameter("password") + "';");
+	if (rs.next()) {
+		firstName = rs.getString("first_name");
+		lastName = rs.getString("last_name");
+		custID = rs.getString("id");
+	} 
+	else { //new login but no matches = bad login
+		response.sendRedirect("./index.jsp?login=bad");
+	}
 }
-
-out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
-System.out.println(custID);
 //Does a session already exist and is not the same customer?
-if (!session.isNew() && !custID.equals(session.getAttribute("custID"))) {
-	session = request.getSession(true);
-	session.setAttribute("custID", custID);
+if (custID != null && email != null) {//previous session exists and login entered. Same users?
+	if (!custID.equals(session.getAttribute("custID"))) {//Different Users
+		session = request.getSession(true);
+		session.setAttribute("custID", custID);
+		session.setAttribute("firstName", firstName);
+		session.setAttribute("lastName", lastName);
+		session.setAttribute("cart", new ShoppingCart(custID));
+	}
 }
-else if (session.isNew()) { // New session
-	session.setAttribute("custID",custID);
-	session.setAttribute("cart", new ShoppingCart(custID));
-}
+System.out.println(custID);
+out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
 %>
 <jsp:include page="./fakeCart.jsp"></jsp:include>
 <a href="./browse.jsp">Browse the Movie Database</a><br />

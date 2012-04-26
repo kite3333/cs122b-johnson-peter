@@ -14,6 +14,7 @@ String lastName = "";
 String loginUser = "root";
 String loginPasswd = "";
 String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
+String custID = "";
 
 Class.forName("com.mysql.jdbc.Driver").newInstance();
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
@@ -28,11 +29,16 @@ if (rs.next())
 {
 	firstName = rs.getString("first_name");
 	lastName = rs.getString("last_name");
+	custID = rs.getString("id");
 }
 else {
 	response.sendRedirect("./index.jsp?login=bad");
 }
 out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
+
+String sessionSet=custID;
+session.setAttribute("MySession",sessionSet);
+
 %>
 <a href="./browse.jsp">Browse the Movie Database</a> <br />
 <a href="./search.jsp">Search the Movie Database</a>

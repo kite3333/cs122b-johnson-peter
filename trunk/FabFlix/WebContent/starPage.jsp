@@ -92,7 +92,7 @@ while(rs.next())
             "<td>" + fname + "</td>" +
             "<td>" + lname + "</td>" +
             "<td>" + dob + "</td>" +
-            "<td>" + picture + "</td>" +
+            "<td>" + "<img src=" + "'" + picture + "'" + "/>" + "</td>" +
             "<td>" + j + "</td>" +
             "</tr>");
 

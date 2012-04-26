@@ -83,6 +83,7 @@ if (genre != null || titleStart != null) { //Make Browse Query
 	{
 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
 				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title LIMIT " + limit + " OFFSET " + 0 + ";";
+				
 	}
 	
 	else if(titleStart != null)
@@ -98,32 +99,34 @@ catch(NullPointerException e)
 }
 }
 else { //Make Search Query
-	selectBuilder.append("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url FROM movies");
-	if ( !(inTitle.isEmpty() && inYear.isEmpty() && inDirector.isEmpty() && inActorFName.isEmpty() && inActorLName.isEmpty() ) ) {
+	//selectBuilder.append("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url FROM movies");
+	selectBuilder.append("select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id ");	
+
+if ( !(inTitle.isEmpty() && inYear.isEmpty() && inDirector.isEmpty() && inActorFName.isEmpty() && inActorLName.isEmpty() ) ) {
 		clauseBuilder.append(" WHERE");
 		if (!inTitle.isEmpty()) {
-			clauseBuilder.append(" title LIKE \"%" + inTitle + "%\"");
+			clauseBuilder.append(" m.title LIKE \"%" + inTitle + "%\"");
 			useAnd = true;
 		}
 		if (!inYear.isEmpty()) {
 			if (useAnd) {
 				clauseBuilder.append(" AND");
 			}
-			clauseBuilder.append(" year = '" + inYear + "'");
+			clauseBuilder.append(" m.year = '" + inYear + "'");
 			useAnd = true;
 		}
 		if (!inDirector.isEmpty()) {
 			if (useAnd) {
 				clauseBuilder.append(" AND");
 			}
-			clauseBuilder.append(" director = '" + inDirector + "'");
+			clauseBuilder.append(" m.director = '" + inDirector + "'");
 			useAnd = true;
 		}
 		if (!inActorFName.isEmpty()) {
 			if (useAnd) {
 				clauseBuilder.append(" AND");
 			}
-			clauseBuilder.append(" stars.first_name = '" + inActorFName + "'");
+			clauseBuilder.append(" a.first_name = '" + inActorFName + "'");
 			useAnd = true;
 		}
 
@@ -131,12 +134,12 @@ else { //Make Search Query
 			if (useAnd) {
 				clauseBuilder.append(" AND");
 			}
-			clauseBuilder.append(" stars.last_name = '" + inActorLName + "'");
+			clauseBuilder.append(" a.last_name = '" + inActorLName + "'");
 			useAnd = true;
 		}
 		if (!inActorLName.isEmpty() || !inActorFName.isEmpty()) {
-			selectBuilder.append(", stars, stars_in_movies");
-			clauseBuilder.append(" AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id");
+			//selectBuilder.append(", stars, stars_in_movies");
+			//clauseBuilder.append(" AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id");
 		}
 	}
 	query = selectBuilder.toString() + clauseBuilder.toString() + ";";

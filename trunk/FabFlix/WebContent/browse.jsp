@@ -10,7 +10,7 @@
 	%>
 
 <%
-ServletUtilities.headWithTitle("Fabflix Main Page - Browsing");
+out.print(ServletUtilities.headWithTitle("Fabflix - Browsing"));
 
 
 String loginUser = "root";

@@ -2,7 +2,7 @@
 	import = "coreservlets.ServletUtilities" 
 %>
 <%
-ServletUtilities.headWithTitle("FabFlix - Search");
+out.print(ServletUtilities.headWithTitle("FabFlix - Search"));
 %>
 <h1>Search</h1>
 <form name="search" action="Search" method="get">

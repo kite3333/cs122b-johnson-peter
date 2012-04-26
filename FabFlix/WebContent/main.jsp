@@ -22,13 +22,13 @@ String query = "SELECT * from customers where email = '" + email + "'" + ";";
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
 
-while (rs.next())
+if (rs.next())
 {
 	firstName = rs.getString("first_name");
 	lastName = rs.getString("last_name");
 }
 out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
 %>
-<a href="../FabFlix/browse.jsp">Browse the Movie Database</a> <br />
-<a href="../FabFlix/search.jsp">Search the Movie Database</a>
-<% out.println(ServletUtilities.pageEnd());%>
+<a href="./browse.jsp">Browse the Movie Database</a> <br />
+<a href="./search.jsp">Search the Movie Database</a>
+<% out.println(ServletUtilities.pageEnd()); %>

@@ -27,7 +27,7 @@ ResultSet rs = statement.executeQuery(query);
 
 <!-- BROWSE BY Genre SECTION -->
 <h2>Browse by Genre</h2>
-<form action="../FabFlix/movieList.jsp" method="get">
+<form action="./movieList.jsp" method="get">
 <select name = "genre">
 <%
 
@@ -47,10 +47,10 @@ while (rs.next()) {
 <%
 out.print("||  ");
 for (int i = 0; i <= 9; i++) {
-	out.print("<a href = \"../FabFlix/movieList.jsp?titleStart=" + i + "\">" + i + "</a>  ||  ");
+	out.print("<a href = \"./movieList.jsp?titleStart=" + i + "\">" + i + "</a>  ||  ");
 }
 for (int i = 65; i <= 90; i++) {
-	out.print("<a href = \"../FabFlix/movieList.jsp?titleStart=" + (char) i + "\">" + (char) i + "</a>  ||  ");
+	out.print("<a href = \"./movieList.jsp?titleStart=" + (char) i + "\">" + (char) i + "</a>  ||  ");
 }
 
 out.println(ServletUtilities.pageEnd());

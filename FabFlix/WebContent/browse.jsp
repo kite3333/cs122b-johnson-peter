@@ -12,7 +12,6 @@
 <%
 out.print(ServletUtilities.headWithTitle("Fabflix - Browsing"));
 
-
 String loginUser = "root";
 String loginPasswd = "";
 String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
@@ -48,11 +47,11 @@ while (rs.next()) {
 <%
 out.print("||  ");
 for (int i = 0; i <= 9; i++) {
-	out.print("<a href = \"../FabFlix/movieList.jsp?title=" + i + "\">" + i + "</a>  ||  ");
+	out.print("<a href = \"../FabFlix/movieList.jsp?titleStart=" + i + "\">" + i + "</a>  ||  ");
 }
 for (int i = 65; i <= 90; i++) {
-	out.print("<a href = \"../FabFlix/movieList.jsp?title=" + (char) i + "\">" + (char) i + "</a>  ||  ");
+	out.print("<a href = \"../FabFlix/movieList.jsp?titleStart=" + (char) i + "\">" + (char) i + "</a>  ||  ");
 }
 
-ServletUtilities.pageEnd();
+out.println(ServletUtilities.pageEnd());
 %>

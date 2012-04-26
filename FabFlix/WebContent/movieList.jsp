@@ -17,13 +17,28 @@ out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pag
 out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Next" + '"' + ">" + "Next" + "</a>");
 
 
-ServletUtilities.headWithTitle("Results List");
-String genre = request.getParameter("genre");
-String title = request.getParameter("title");
+out.println(ServletUtilities.headWithTitle("Results List"));
 
+//Browse Variables
+String genre = request.getParameter("genre");
+String titleStart = request.getParameter("titleStart");
+
+//Pagination Variables
 int limit = 10;
 int offset = 20;
 
+//Search Variables
+String inTitle = request.getParameter("title");
+String inYear = request.getParameter("year");
+String inDirector = request.getParameter("director");
+String inActorFName = request.getParameter("actor_first");
+String inActorLName = request.getParameter("actor_last");
+
+//Query Variables
+StringBuilder selectBuilder = new StringBuilder();
+StringBuilder clauseBuilder = new StringBuilder();
+boolean useAnd = false;
+String query = null;
 
 String loginUser = "root";
 String loginPasswd = "";
@@ -33,24 +48,70 @@ Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)
 // Declare our statement
 Statement statement = dbcon.createStatement();
 
-String query = "";
-if(genre != null)
-{
-	query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
-			+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title LIMIT " + limit + " OFFSET " + offset + ";";
-}
-
-if(title != null)
-{
-	query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + title + "%' GROUP BY m.title;";
+//Browse overrides Search
+if (genre != null || titleStart != null) { //Make Browse Query
+	if(genre != null)
+	{
+		query = "select m.id, m.title,inTitlear, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
+				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title LIMIT " + limit + " OFFSET " + offset + ";";
+	}
 	
+	if(titleStart != null)
+	{
+		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.title;";
+		
+	}
+}
+else { //Make Search Query
+	selectBuilder.append("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url FROM movies");
+	if ( !(inTitle.isEmpty() && inYear.isEmpty() && inDirector.isEmpty() && inActorFName.isEmpty() && inActorLName.isEmpty() ) ) {
+		clauseBuilder.append(" WHERE");
+		if (!inTitle.isEmpty()) {
+			clauseBuilder.append(" title LIKE \"%" + inTitle + "%\"");
+			useAnd = true;
+		}
+		if (!inYear.isEmpty()) {
+			if (useAnd) {
+				clauseBuilder.append(" AND");
+			}
+			clauseBuilder.append(" year = '" + inYear + "'");
+			useAnd = true;
+		}
+		if (!inDirector.isEmpty()) {
+			if (useAnd) {
+				clauseBuilder.append(" AND");
+			}
+			clauseBuilder.append(" director = '" + inDirector + "'");
+			useAnd = true;
+		}
+		if (!inActorFName.isEmpty()) {
+			if (useAnd) {
+				clauseBuilder.append(" AND");
+			}
+			clauseBuilder.append(" stars.first_name = '" + inActorFName + "'");
+			useAnd = true;
+		}
+
+		if (!inActorLName.isEmpty()) {
+			if (useAnd) {
+				clauseBuilder.append(" AND");
+			}
+			clauseBuilder.append(" stars.last_name = '" + inActorLName + "'");
+			useAnd = true;
+		}
+		if (!inActorLName.isEmpty() || !inActorFName.isEmpty()) {
+			selectBuilder.append(", stars, stars_in_movies");
+			clauseBuilder.append(" AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id");
+		}
+	}
+	query = selectBuilder.toString() + clauseBuilder.toString() + ";";
 }
 
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
 %>
 
-<h1>Fabflix Main Page - Browsing</h1>
+<h1>Fabflix - Browse Results</h1>
 <h2>Results</h2>
 <TABLE border="1">
 <tr>
@@ -139,4 +200,4 @@ catch(NullPointerException e)
  %>
 
 </TABLE>
-</body></html>
+<% out.println(ServletUtilities.pageEnd()); %>

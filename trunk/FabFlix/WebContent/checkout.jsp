@@ -21,8 +21,8 @@
 </TABLE>
 
 <%
-String g = (String)session.getAttribute("MySession");
-String getSessionValue= (String)session.getAttribute("sessionSet"); 
+String g = (String) session.getAttribute("MySession");
+String getSessionValue= (String) session.getAttribute("sessionSet"); 
 System.out.println("session is " + g);
 
 String loginUser = "root";

@@ -60,7 +60,8 @@ public class HelloWorld extends HttpServlet {
     }
     if(!rs.next())
     {
-    		response.sendRedirect("http://localhost:8080/FabFlix/?login=bad");
+    		
+    		response.sendRedirect("http://localhost:8080/FabFlix/badLogin.jsp?login=bad");
     		return;
     }
     

@@ -9,16 +9,18 @@
 %>
 <%
 out.print(ServletUtilities.headWithTitle("Fabflix Main"));
-String email = request.getParameter("email");
 String firstName = "";
 String lastName = "";
 String loginUser = "root";
 String loginPasswd = "";
 String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
 
+Class.forName("com.mysql.jdbc.Driver").newInstance();
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 Statement statement = dbcon.createStatement();
-String query = "SELECT * from customers where email = '" + email + "'" + ";";
+String query = "SELECT * FROM customers WHERE email = '" + request.getParameter("email") + "'"
+	+ " AND password = '" + request.getParameter("password") + "';";
+System.out.println(query);
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
 
@@ -26,6 +28,9 @@ if (rs.next())
 {
 	firstName = rs.getString("first_name");
 	lastName = rs.getString("last_name");
+}
+else {
+	response.sendRedirect("./index.jsp?login=bad");
 }
 out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
 %>

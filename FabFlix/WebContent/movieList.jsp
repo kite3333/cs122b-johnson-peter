@@ -226,7 +226,7 @@ while(rs.next())
             "<td>" + director + "</td>" +
             "<td>" + j + "</td>" +
             "<td>" + genres + "</td>" +
-            "<td>" + bannerURL + "</td>" +
+            "<td>" +  "<img src=" + "'" + bannerURL + "'" + "/>" + "</td>" +
             "<td>" + trailerURL + "</td>" +
             "</tr>");
 

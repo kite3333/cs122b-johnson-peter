@@ -1,4 +1,5 @@
-<%@ page import = "coreservlets.ServletUtilities" %>
+<%@ page import = "coreservlets.ServletUtilities,
+	java.util.Enumeration" %>
 <% out.print(ServletUtilities.headWithTitle("Fabflix - Login")); %>
 <table class="title">
   <tr><th>Fabflix</th></tr>

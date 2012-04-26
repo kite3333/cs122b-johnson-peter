@@ -14,9 +14,13 @@
 int pageNum = 1;
 out.println("Page " + pageNum);
 out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Previous" + "&pageNum=" + pageNum + '"' + ">" + "Previous" + "</a>" + " || ");
-out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Next" + '"' + ">" + "Next" + "</a>");
+out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?page=" + "Next" + "&pageNum=" + pageNum + '"' + ">" + "Next" + "</a>");
 
-
+out.println("<p>");
+out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "10" + "&pageNum=" + pageNum + '"' + ">" + 10 + "</a>");
+out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "25" + "&pageNum=" + pageNum + '"' + ">" + 25 + "</a>");
+out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "50" + "&pageNum=" + pageNum + '"' + ">" + 50 + "</a>");
+out.println("<a href= " + '"' + "http://localhost:8080/FabFlix/movieList.jsp?pageSize=" + "100" + "&pageNum=" + pageNum + '"' + ">" + 100 + "</a>");
 out.println(ServletUtilities.headWithTitle("Results List"));
 
 //Browse Variables
@@ -26,6 +30,8 @@ String titleStart = request.getParameter("titleStart");
 //Pagination Variables
 int limit = 10;
 int offset = 20;
+
+int pageSize = 0;
 
 //Search Variables
 String inTitle = request.getParameter("title");
@@ -48,7 +54,20 @@ Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)
 // Declare our statement
 Statement statement = dbcon.createStatement();
 
+Integer s = null;
+try { 
+	pageSize = Integer.parseInt(request.getParameter("pageSize"));
+	  s = Integer.valueOf(pageSize);
+	}
+	catch (NumberFormatException e) {
+	  // ...
+	}
+if (s != null) { offset = pageSize; }
+
+
+
 //Browse overrides Search
+
 if (genre != null || titleStart != null) { //Make Browse Query
 	if(genre != null)
 	{
@@ -58,8 +77,7 @@ if (genre != null || titleStart != null) { //Make Browse Query
 	
 	if(titleStart != null)
 	{
-		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.title;";
-		
+		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.title;";	
 	}
 }
 else { //Make Search Query
@@ -109,6 +127,8 @@ else { //Make Search Query
 
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
+
+
 %>
 
 <h1>Fabflix - Browse Results</h1>

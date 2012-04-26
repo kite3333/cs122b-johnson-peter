@@ -104,8 +104,6 @@ public class Search extends HttpServlet {
 		    	}
 		    }
 		    query = selectBuilder.toString() + clauseBuilder.toString() + ";";
-		    
-		    System.out.println("Query: " + query);
 
 		    // Perform the query
 		    ResultSet rs = statement.executeQuery(query);

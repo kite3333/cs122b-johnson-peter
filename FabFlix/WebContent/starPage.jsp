@@ -1,15 +1,15 @@
-<%@ page import ="java.io.*,java.sql.Connection,java.sql.DriverManager,java.sql.ResultSet,
-java.sql.SQLException,java.sql.Statement"%>
-
-<!DOCTYPE html>
-<html>
-<head><title>Fabflix Main Page - Star Page</title></head>
-<body>
-<h1>Fabflix Main Page - Star Page</h1>
-<%@ page import="java.util.*" %>
-<p>
-
+<%@ page import ="
+	java.io.*,
+	java.sql.Connection,
+	java.sql.DriverManager,
+	java.sql.ResultSet,
+	java.sql.SQLException,
+	java.sql.Statement,
+	java.util.*,
+	coreservlets.ServletUtilities"
+%>
 <%
+out.print(ServletUtilities.headWithTitle("Fabflix - Star Page"));
 String star = request.getParameter("star");
 
 int o = star.indexOf(' ');
@@ -30,29 +30,20 @@ Statement statement = dbcon.createStatement();
 
 String query = "select stars.id, stars.first_name, stars.last_name, stars.dob, stars.photo_url, group_concat(distinct movies.title separator ', ') from stars, stars_in_movies, movies where stars.first_name = " + 
 "'" + firstname + "'" +  " AND stars.last_name = " + "'" + lastname + "'" + " AND stars.id = stars_in_movies.star_id AND stars_in_movies.movie_id = movies.id;";
-
-
+%>
+<h2>Results</h2>
+<TABLE border=1>
+<tr>
+	<td>ID</td>
+	<td>First Name</td>
+	<td>Last Name</td>
+	<td>DOB</td>
+	<td>Picture</td>
+	<td>List of Movies</td>
+</tr>
+<%
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
-
-out.println("<h2>" + "Results" + "</h2>");
-
-out.println("<TABLE border>");
-out.println("<tr>" +
-        "<td>" + "ID" + "</td>" +
-        "<td>" + "First Name" + "</td>" +
-        "<td>" + "Last Name" + "</td>" +
-        "<td>" + "DOB" + "</td>" +
-        "<td>" + "Picture" + "</td>" +
-        "<td>" + "List of Movies" + "</td>" +
-
-        "</tr>");
-
-
-
-
-
-
 while(rs.next())
 {
 
@@ -108,18 +99,6 @@ while(rs.next())
 
 		j = "";
 }
-	
-
-
-
-out.println("</TABLE>"); 
-
-
-
-
-
 %>
-
-
-</p>
-</body></html>
+</TABLE>
+<% out.println(ServletUtilities.pageEnd()); %>

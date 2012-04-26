@@ -1,5 +1,14 @@
-<%@ page import ="java.io.*,java.sql.Connection,java.sql.DriverManager,java.sql.ResultSet,
-java.sql.SQLException,java.sql.Statement,java.util.Scanner, java.util.*, coreservlets.ServletUtilities"%>
+<%@ page import = "java.io.*,
+	java.sql.Connection,
+	java.sql.DriverManager,
+	java.sql.ResultSet,
+	java.sql.SQLException,
+	java.sql.Statement,
+	java.util.Scanner, 
+	java.util.*, 
+	coreservlets.ServletUtilities"
+	language = "java"
+%>
 
 <%
 ServletUtilities.headWithTitle("Results List");

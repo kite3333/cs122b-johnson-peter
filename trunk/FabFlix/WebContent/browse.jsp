@@ -1,4 +1,4 @@
-<%@ page import ="java.io.*,
+<%@ page import = "java.io.*,
 	java.sql.Connection,
 	java.sql.DriverManager,
 	java.sql.ResultSet,
@@ -6,6 +6,7 @@
 	java.sql.Statement, 
 	java.util.*, 
 	coreservlets.ServletUtilities"
+	language = "java"
 	%>
 
 <%

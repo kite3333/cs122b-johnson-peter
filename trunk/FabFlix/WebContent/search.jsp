@@ -1,42 +1,18 @@
-<%@ page import ="java.io.*,java.sql.Connection,java.sql.DriverManager,java.sql.ResultSet,
-java.sql.SQLException,java.sql.Statement"%>
-
-<!DOCTYPE html>
-<html>
-<head><title>Fabflix Main Page - Searching</title></head>
-<body>
-<h1>Fabflix Main Page - Searching</h1>
-<%@ page import="java.util.*" %>
-<p>
-
-<%
-String email = request.getParameter("email");
-String firstName = "";
-String lastName = "";
-String loginUser = "root";
-String loginPasswd = "";
-String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
-
-Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-// Declare our statement
-Statement statement = dbcon.createStatement();
-
-String query = "SELECT * from customers where email = '" + email + "'" + ";";
-
-// Perform the query
-ResultSet rs = statement.executeQuery(query);
-
-while(rs.next())
-{
-	firstName = rs.getString("first_name");
-	lastName = rs.getString("last_name");
-}
-
-out.println("Welcome " + firstName + " " + lastName);
+<%@ page language="java" 
+	import = "coreservlets.ServletUtilities" 
 %>
-
-<a href="http://localhost:8080/FabFlix/browse.jsp"> Browse Movies</a>
-<a href="http://localhost:8080/FabFlix/search.jsp"> Search Movies</a>
-
-</p>
-</body></html>
+<%
+ServletUtilities.headWithTitle("FabFlix - Search");
+%>
+<h1>Search</h1>
+<form name="search" action="Search" method="get">
+Title: <input type="text" name="title" /><br />
+Year: <input type="text" name="year" /><br />
+Director: <input type="text" name="director"><br />
+Actor's First Name: <input type="text" name="actor_first"><br />
+Actor's Last Name: <input type="text" name="actor_last"><br />
+<input type="submit" value="Submit" />
+</form>
+<%
+ServletUtilities.pageEnd();
+%>

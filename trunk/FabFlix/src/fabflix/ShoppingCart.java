@@ -8,19 +8,6 @@ public class ShoppingCart {
 	private HashMap<Integer, Item> cart;
 	private int customerID;
 	
-	class Item {
-		public String title; //Included for user ease of reading (vs ID).
-		public int id;
-		public int quantity;
-		
-		public Item(String newTitle, int newID, int newQuant) {
-			title = newTitle;
-			id = newID;
-			quantity = newQuant;
-		}
-		
-	}
-	
 	public ShoppingCart(int custID) {
 		customerID = custID;
 		cart = new HashMap<Integer, Item>();
@@ -55,9 +42,17 @@ public class ShoppingCart {
 		} //WARNING: NO notification if condition fails
 	}
 	
+	public int size() {
+		return cart.size();
+	}
+	
+	//Returns Item or null identified by movieID
+	public Item getItem(int movieID) {
+		return cart.get(movieID);
+	}
 	
 	//Makes an INSERT query for one cart item.
-	public String makeQuery(int movieID) {
+	public String makeSQLQuery(int movieID) {
 		if (cart.containsKey(movieID)) {
 			return ("INSERT INTO shoppingcarts (custID, movieID, title, quant)"
 				+ "VALUES(" + customerID + ", " + movieID + ", '" + cart.get(movieID).title
@@ -69,14 +64,14 @@ public class ShoppingCart {
 	}
 	
 	//For inserting a shopping cart into the database. Returns null if the cart is empty.
-	public String[] makeQueryArray() {
+	public String[] makeSQLQueryArray() {
 		String[] queries = null;
 		if (cart.size() > 0) {
 			queries = new String[cart.size()];
 			//I want an array so that I can iterate using int i
 			Integer[] movieIDs = cart.keySet().toArray(new Integer[0]);
 			for (int i = 0; i < movieIDs.length; i++) {
-				queries[i] = makeQuery(movieIDs[i].intValue());
+				queries[i] = makeSQLQuery(movieIDs[i].intValue());
 			}
 		}
 		return queries;

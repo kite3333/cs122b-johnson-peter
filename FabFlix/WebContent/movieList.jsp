@@ -83,20 +83,13 @@ if (genre != null || titleStart != null) { //Make Browse Query
 	{
 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
 				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.title LIMIT " + limit + " OFFSET " + 0 + ";";
-				
-				System.out.println("pagenum is " + pageNum);
-		
 	}
 	
 	else if(titleStart != null)
 	{
 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.title"
 				+ " LIMIT " + limit + " OFFSET " + offset + ";";	
-		System.out.println("we are in the title loop");
-		System.out.println("limit is " + limit);
-		System.out.println("offset is " + offset);
-		System.out.println("title is " + titleStart);
-		
+		System.out.println(query);
 	}
 }
 catch(NullPointerException e)

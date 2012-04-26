@@ -31,4 +31,4 @@ out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
 %>
 <a href="../FabFlix/browse.jsp">Browse the Movie Database</a> <br />
 <a href="../FabFlix/search.jsp">Search the Movie Database</a>
-<%ServletUtilities.pageEnd();%>
+<% out.println(ServletUtilities.pageEnd());%>

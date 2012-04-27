@@ -72,6 +72,28 @@ out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=25\">25</a
 out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=50\">50</a>");
 out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=100\">100</a>");	
 
+//sorting here
+String sortByTitle = request.getParameter("sortByTitle");
+String sortByYear = request.getParameter("sortByYear");
+
+String columnToSort = "m.title";
+String sort = "ASC";
+if(sortByYear != null)
+{
+	columnToSort = "m.year";
+	sort = sortByYear;
+}
+else if(sortByTitle != null)
+{
+	columnToSort = "m.title";
+	sort = sortByTitle;
+}
+
+urlParameters += "&sortByTitle=" + sortByTitle;
+urlParameters += "&sortByYear=" + sortByYear;
+
+System.out.println("URL PARAMETERS" + urlParameters);
+
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 // Declare our statement
 Statement statement = dbcon.createStatement();
@@ -81,15 +103,22 @@ if (genre != null || titleStart != null) { //Make Browse Query
 	try{
 	if(genre != null)
 	{
-		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
+		/* query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
 				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.id LIMIT " + limit + " OFFSET " + 0 + ";";
-				
+			 */
+			 
+		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m, genres_in_movies mg, genres g, stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id " 
+				+ "AND g.name = " + "'" + genre + "'" + " GROUP BY m.id ORDER BY " + columnToSort + " " + sort +  " LIMIT " +  limit + " OFFSET " + 0 + ";";
+			
 	}
 	//Title overrides genre browse
 	else if(titleStart != null)
 	{
-		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.id"
-				+ " LIMIT " + limit + " OFFSET " + offset + ";";	
+/* 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id WHERE m.title LIKE '" + titleStart + "%' GROUP BY m.id"
+				+ " LIMIT " + limit + " OFFSET " + offset + ";";	 */
+		
+				query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') FROM movies m, genres_in_movies mg, genres g, stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id AND m.title LIKE '" + titleStart + "%' GROUP BY m.id"
+						+ " ORDER BY " + columnToSort + " " + sort + " LIMIT " + limit + " OFFSET " + offset + ";";	
 		System.out.println(query);
 	}
 }
@@ -100,12 +129,12 @@ catch(NullPointerException e)
 }
 else { //Make Search Query
 	//selectBuilder.append("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url FROM movies");
-	selectBuilder.append("select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id ");	
+	selectBuilder.append("select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") FROM movies m, genres_in_movies mg, genres g, stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id");	
 
 if ( !(inTitle.isEmpty() && inYear.isEmpty() && inDirector.isEmpty() && inActorFName.isEmpty() && inActorLName.isEmpty() ) ) {
-		clauseBuilder.append(" WHERE");
+		clauseBuilder.append("");
 		if (!inTitle.isEmpty()) {
-			clauseBuilder.append(" m.title LIKE \"%" + inTitle + "%\"");
+			clauseBuilder.append(" AND m.title LIKE \"%" + inTitle + "%\"");
 			useAnd = true;
 		}
 		if (!inYear.isEmpty()) {
@@ -156,13 +185,16 @@ ResultSet rs = statement.executeQuery(query);
 <TABLE border="1">
 <tr>
 	<td>ID</td>
-	<td>Title</td>
-	<td>Year</td>
+	<%
+	out.println("<td>Title <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByTitle=ASC&" + urlParameters + "'" + "> ASC </a> || <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByTitle=DESC&" + urlParameters + "'" + "> DESC</a></td>");
+	out.println("<td>Year <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByYear=ASC&" + urlParameters + "'" + "> ASC </a> || <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByYear=DESC&" + urlParameters + "'" + "> DESC </a></td>");
+	%>
 	<td>Director</td>
 	<td>Stars</td>
 	<td>Genres</td>
 	<td>Banner URL</td>
 	<td>Trailer URL</td>
+	<td>Cart?</td>
 </tr>
 
 <%
@@ -224,6 +256,7 @@ while(rs.next())
             "<td>" + genres + "</td>" +
             "<td>" +  "<img src=" + "'" + bannerURL + "'" + "/>" + "</td>" +
             "<td>" + trailerURL + "</td>" +
+            "<td>" + "<a href=" + "'" + "http://localhost:8080/FabFlix/shoppingCart.jsp" + "'" + ">" + "Add to Cart" + "</a>" + "</td>" +
             "</tr>");
 
 		j = "";

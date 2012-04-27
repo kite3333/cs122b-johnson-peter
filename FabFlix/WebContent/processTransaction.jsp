@@ -61,7 +61,6 @@ if (cart != null && !cart.isEmpty() && rs.next())
 	}
 	qBuilder.deleteCharAt(qBuilder.length() - 1); //Delete last comma
 	qBuilder.append(";");
-	System.out.println(qBuilder.toString());
 	statement = dbcon.createStatement(); //Make new statement
 	statement.execute(qBuilder.toString());
 	if (statement.getUpdateCount() == countVerify) {

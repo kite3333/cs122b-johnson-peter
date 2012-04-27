@@ -104,11 +104,11 @@ if (genre != null || titleStart != null) { //Make Browse Query
 	if(genre != null)
 	{
 		/* query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id " 
-				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.id LIMIT " + limit + " OFFSET " + 0 + ";";
-			 */
+				+ "WHERE g.name = " + "'" + genre + "'" + " GROUP BY m.id LIMIT " + limit + " OFFSET " + 0 + ";"; */
+			 
 			 
 		query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") from movies m, genres_in_movies mg, genres g, stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id " 
-				+ "AND g.name = " + "'" + genre + "'" + " GROUP BY m.id ORDER BY " + columnToSort + " " + sort +  " LIMIT " +  limit + " OFFSET " + 0 + ";";
+				+ "AND g.name = " + "'" + genre + "'" + " GROUP BY m.id ORDER BY " + columnToSort + " " + sort +  " LIMIT " +  limit + " OFFSET " + 0 + ";"; 
 			
 	}
 	//Title overrides genre browse
@@ -128,13 +128,13 @@ catch(NullPointerException e)
 }
 }
 else { //Make Search Query
-	//selectBuilder.append("SELECT movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url FROM movies");
-	selectBuilder.append("select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") FROM movies m, genres_in_movies mg, genres g, stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id");	
+	selectBuilder.append("select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, ISNULL(group_concat(distinct g.name separator ', ')), ISNULL(group_concat(distinct a.first_name, ' ', a.last_name separator ', ')) from movies m LEFT JOIN genres_in_movies mg on mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN stars a ON a.id = ma.star_id");
+	//selectBuilder.append("select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, " + "' " + "'" + ", a.last_name separator " + "'" + ", " + "'" + ") FROM movies m, genres_in_movies mg, genres g, stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id");	
 
 if ( !(inTitle.isEmpty() && inYear.isEmpty() && inDirector.isEmpty() && inActorFName.isEmpty() && inActorLName.isEmpty() ) ) {
-		clauseBuilder.append("");
+		clauseBuilder.append(" WHERE");
 		if (!inTitle.isEmpty()) {
-			clauseBuilder.append(" AND m.title LIKE \"%" + inTitle + "%\"");
+			clauseBuilder.append(" m.title LIKE \"%" + inTitle + "%\"");
 			useAnd = true;
 		}
 		if (!inYear.isEmpty()) {
@@ -171,7 +171,7 @@ if ( !(inTitle.isEmpty() && inYear.isEmpty() && inDirector.isEmpty() && inActorF
 			//clauseBuilder.append(" AND stars.id = stars_in_movies.star_id AND movies.id = stars_in_movies.movie_id");
 		}
 	}
-	query = selectBuilder.toString() + clauseBuilder.toString() + ";";
+	query = selectBuilder.toString() + clauseBuilder.toString() + "Group BY m.id;";
 }
 
 // Perform the query
@@ -209,8 +209,8 @@ while(rs.next())
 	String bannerURL = rs.getString("banner_url");
 	String trailerURL = rs.getString("trailer_url");
 
-	String stars = rs.getString("group_concat(distinct a.first_name, ' ', a.last_name separator ', ')");
-	String genres = rs.getString("group_concat(distinct g.name separator ', ')");
+	String stars = rs.getString("ISNULL(group_concat(distinct a.first_name, ' ', a.last_name separator ', '))");
+	String genres = rs.getString("ISNULL(group_concat(distinct g.name separator ', '))");
 	
 	//need help on this part to add the url to pass to the starlist page...
 	String star_copy = stars;

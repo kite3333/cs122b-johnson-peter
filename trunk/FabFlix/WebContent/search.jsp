@@ -5,6 +5,8 @@
 out.print(ServletUtilities.headWithTitle("Fabflix - Search"));
 %>
 <h1>Search</h1>
+<form action="./checkout.jsp">
+<input type="submit" value="Go to Checkout" /></form>
 <form name="search" action="./movieList.jsp" method="get">
 	Title: <input type="text" name="title" /><br />
 	Year: <input type="text" name="year" /><br />

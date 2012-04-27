@@ -18,7 +18,7 @@ String lastname = star.substring(o);
 lastname = lastname.trim();
 firstname = firstname.trim();
 
-System.out.println("first name =" + firstname + " last name =" + lastname);
+// System.out.println("first name =" + firstname + " last name =" + lastname);
 
 String loginUser = "root";
 String loginPasswd = "";
@@ -79,7 +79,7 @@ while(rs.next())
 		int l = movie_copy.indexOf(",");
 		j += "<a href= " + '"' + "./movieList.jsp?title=" + movie_copy.substring(0, l) + '"' + ">" + movie_copy.substring(0, l) + "</a>" + ", ";
 		movie_copy = movie_copy.substring(l+2);
-		System.out.println("star_copy is now " + movie_copy);
+// 		System.out.println("star_copy is now " + movie_copy);
 	}
     //we take the last one too
     movie_copy = movie_copy.trim();

@@ -92,7 +92,7 @@ else if(sortByTitle != null)
 urlParameters += "&sortByTitle=" + sortByTitle;
 urlParameters += "&sortByYear=" + sortByYear;
 
-System.out.println("URL PARAMETERS" + urlParameters);
+//System.out.println("URL PARAMETERS" + urlParameters);
 
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 // Declare our statement
@@ -119,7 +119,6 @@ if (genre != null || titleStart != null) { //Make Browse Query
 		
 				query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, group_concat(distinct g.name separator ', '), group_concat(distinct a.first_name, ' ', a.last_name separator ', ') FROM movies m, genres_in_movies mg, genres g, stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id AND m.title LIKE '" + titleStart + "%' GROUP BY m.id"
 						+ " ORDER BY " + columnToSort + " " + sort + " LIMIT " + limit + " OFFSET " + offset + ";";	
-		System.out.println(query);
 	}
 }
 catch(NullPointerException e)
@@ -182,19 +181,21 @@ ResultSet rs = statement.executeQuery(query);
 
 <h1>Fabflix - Browse Results</h1>
 <h2>Results</h2>
+<form action="./checkout.jsp">
+<input type="submit" value="Go to Checkout" /></form>
 <TABLE border="1">
 <tr>
+	<td>Get it?</td>
 	<td>ID</td>
 	<%
-	out.println("<td>Title <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByTitle=ASC&" + urlParameters + "'" + "> ASC </a> || <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByTitle=DESC&" + urlParameters + "'" + "> DESC</a></td>");
-	out.println("<td>Year <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByYear=ASC&" + urlParameters + "'" + "> ASC </a> || <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByYear=DESC&" + urlParameters + "'" + "> DESC </a></td>");
+	out.println("<td>Title <a href=" + "'" + "./movieList.jsp?sortByTitle=ASC&" + urlParameters + "'" + "> ASC </a> || <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByTitle=DESC&" + urlParameters + "'" + "> DESC</a></td>");
+	out.println("<td>Year <a href=" + "'" + "./movieList.jsp?sortByYear=ASC&" + urlParameters + "'" + "> ASC </a> || <a href=" + "'" + "http://localhost:8080/FabFlix/movieList.jsp?sortByYear=DESC&" + urlParameters + "'" + "> DESC </a></td>");
 	%>
 	<td>Director</td>
 	<td>Stars</td>
 	<td>Genres</td>
-	<td>Banner URL</td>
-	<td>Trailer URL</td>
-	<td>Cart?</td>
+	<td>Banner Link</td>
+	<td>Trailer Link</td>
 </tr>
 
 <%
@@ -203,7 +204,7 @@ while(rs.next())
 {
 
 	int id = rs.getInt("id");
-	String titleofMovie = rs.getString("title");
+	String titleOfMovie = rs.getString("title");
 	String year = rs.getString("year");
 	String director = rs.getString("director");
 	String bannerURL = rs.getString("banner_url");
@@ -225,13 +226,9 @@ while(rs.next())
         }
     }
     
-    
-/*     System.out.println("count is now " + count);
-	
-    System.out.println("star_copy is now " + star_copy); */
     if(count == 0)
     {
-    	j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>";
+    	j += "<a href= " + '"' + "./starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>";
     }
     
     if(count != 0)
@@ -239,35 +236,32 @@ while(rs.next())
     for(int i = 0; i < count; i++)
 	{
 		int l = star_copy.indexOf(",");
-		j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy.substring(0, l) + '"' + ">" + star_copy.substring(0, l) + "</a>" + ", ";
+		j += "<a href= " + '"' + "./starPage.jsp?star=" + star_copy.substring(0, l) + '"' + ">" + star_copy.substring(0, l) + "</a>" + ", ";
 		star_copy = star_copy.substring(l+2);
 		/* System.out.println("star_copy is now " + star_copy); */
 	}
     //we take the last one too
-    j += "<a href= " + '"' + "http://localhost:8080/FabFlix/starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>" ;
+    j += "<a href= " + '"' + "./starPage.jsp?star=" + star_copy + '"' + ">" + star_copy + "</a>" ;
     }
 
 		out.println("<tr>" +
+            "<td>" + "<a href=\"./shoppingCart.jsp?" + id + "=1&title=" + titleOfMovie + "\">Add to Cart</a></td>" +
 	        "<td>" + id + "</td>" +
-            "<td>" + titleofMovie + "</td>" +
+            "<td>" + titleOfMovie + "</td>" +
             "<td>" + year + "</td>" +
             "<td>" + director + "</td>" +
             "<td>" + j + "</td>" +
             "<td>" + genres + "</td>" +
-            "<td>" +  "<img src=" + "'" + bannerURL + "'" + "/>" + "</td>" +
+            "<td>" + "<img src=" + "'" + bannerURL + "'" + "/>" + "</td>" +
             "<td>" + trailerURL + "</td>" +
-            "<td>" + "<a href=" + "'" + "http://localhost:8080/FabFlix/shoppingCart.jsp" + "'" + ">" + "Add to Cart" + "</a>" + "</td>" +
             "</tr>");
 
 		j = "";
-
-	
-
 }
 }
 catch(NullPointerException e)
 {
-	
+	response.sendRedirect("./error.jsp?code=3");
 }
 
  %>

@@ -53,7 +53,8 @@ if (custID != null && email != null) {//previous session exists and login entere
 }
 out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
 %>
-<jsp:include page="./fakeCart.jsp"></jsp:include> <!-- FOR TESTING ONLY!! REMOVE FROM FINAL -->
+<form action="./checkout.jsp">
+<input type="submit" value="Go to Checkout" /></form>
 <a href="./browse.jsp">Browse the Movie Database</a><br />
 <a href="./search.jsp">Search the Movie Database</a>
 <% out.println(ServletUtilities.pageEnd()); %>

@@ -10,7 +10,7 @@
 <%
 	String custID = (String) session.getAttribute("custID");
 	ShoppingCart cart = (ShoppingCart) session.getAttribute("cart");
-	if (custID == null || cart == null) {
+	if (custID == null || cart == null || cart.isEmpty()) {
 		out.println("<p align=\"center\">Your Cart is Empty</p>");
 	}
 	else {

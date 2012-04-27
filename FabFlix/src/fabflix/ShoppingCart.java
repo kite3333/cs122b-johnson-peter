@@ -47,6 +47,15 @@ public class ShoppingCart {
 		} //WARNING: NO notification if condition fails
 	}
 	
+	public boolean isEmpty() {
+		if (size() > 0) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
 	public int size() {
 		return cart.size();
 	}

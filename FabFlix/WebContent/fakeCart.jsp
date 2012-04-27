@@ -2,11 +2,12 @@
 	fabflix.Item"
 %>
 <%
-if (session.getAttribute("cart") == null) {
+ShoppingCart cart = (ShoppingCart) session.getAttribute("cart");
+if (cart == null || cart.isEmpty()) {
 	ShoppingCart dummyCart = new ShoppingCart("658017");
-	Item item1 = new Item("One", 1, 1);
-	Item item2 = new Item("Two", 2, 2);
-	Item item3 = new Item("Three", 3, 3);
+	Item item1 = new Item("One", 156005, 1);
+	Item item2 = new Item("Two", 693007, 2);
+	Item item3 = new Item("Three", 755005, 3);
 	dummyCart.addItem(item1);
 	dummyCart.addItem(item2);
 	dummyCart.addItem(item3);

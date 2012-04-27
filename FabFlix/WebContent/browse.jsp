@@ -24,7 +24,8 @@ String query = "SELECT * from genres;";
 // Perform the query
 ResultSet rs = statement.executeQuery(query);
 %>
-
+<form action="./checkout.jsp">
+<input type="submit" value="Go to Checkout" /></form>
 <!-- BROWSE BY Genre SECTION -->
 <h2>Browse by Genre</h2>
 <form action="./movieList.jsp" method="get">

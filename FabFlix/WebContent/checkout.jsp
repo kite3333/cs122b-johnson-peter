@@ -10,12 +10,12 @@ out.println(ServletUtilities.headWithTitle("Fabflix - Checkout"));
 
 %>
 <h2>CheckOut</h2>
-<jsp:include page="./shoppingCart.jsp"></jsp:include>
+<jsp:include page="./cartBase.jsp"></jsp:include>
 <form action="processTransaction.jsp" method="post">
-Credit Card #: <input type="text" name="ccNum" value="490001"/><br />
-Expiration: <input type="text" name="expiration" value="2007-09-20"/><br />
-First Name: <input type="text" name="firstName" value="James"/><br />
-Second Name: <input type="text" name="lastName" value="Brown"/><br />
+Credit Card #: <input type="text" name="ccNum"/><br />
+Expiration: <input type="text" name="expiration"/><br />
+First Name: <input type="text" name="firstName"/><br />
+Second Name: <input type="text" name="lastName"/><br />
 <input type="submit" value="Submit" />
 </form>
 

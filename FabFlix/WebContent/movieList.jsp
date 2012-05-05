@@ -210,8 +210,8 @@ while(rs.next())
 	String bannerURL = rs.getString("banner_url");
 	String trailerURL = rs.getString("trailer_url");
 
-	String stars = rs.getString("ISNULL(group_concat(distinct a.first_name, ' ', a.last_name separator ', '))");
-	String genres = rs.getString("ISNULL(group_concat(distinct g.name separator ', '))");
+	String stars = rs.getString("group_concat(distinct a.first_name, ' ', a.last_name separator ', ')");
+	String genres = rs.getString("group_concat(distinct g.name separator ', ')");
 	
 	//need help on this part to add the url to pass to the starlist page...
 	String star_copy = stars;

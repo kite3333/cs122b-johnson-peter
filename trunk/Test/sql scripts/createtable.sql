@@ -5,7 +5,8 @@ create table stars(id integer primary key NOT NULL AUTO_INCREMENT,
 					photo_url varchar(200));
 
 create table movies (id integer primary key NOT NULL AUTO_INCREMENT, 
-				title varchar(100) NOT NULL, year integer NOT NULL, 
+				title varchar(100) NOT NULL, 
+				year integer NOT NULL, 
 				director varchar(100) NOT NULL, 
 				banner_url varchar(200), 
 				trailer_url varchar(200));

@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -7,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.CallableStatement;
+import java.sql.Types;
 import java.util.Scanner;
 
 
@@ -188,13 +192,14 @@ private static final int DB_DNE = 1049;
         	System.out.println("\n\n----MAIN MENU----");
         	System.out.println("-----------------\n");
         	System.out.println("1. Print to screen the movies featuring a given actor.");
-        	System.out.println("2. Add a new actor into the database.");
-        	System.out.println("3. Add a new customer into the database.");
-        	System.out.println("4. Delete a customer from the database.");
-        	System.out.println("5. Print to screen the database metadata.");
-        	System.out.println("6. Enter a valid SELECT/UPDATE/INSERT/DELETE SQL command.");
-        	System.out.println("7. Return to login screen.");
-        	System.out.println("8. Exit the program.");
+        	System.out.println("2. Add a new movie into the database.");
+        	System.out.println("3. Add a new actor into the database.");
+        	System.out.println("4. Add a new customer into the database.");
+        	System.out.println("5. Delete a customer from the database.");
+        	System.out.println("6. Print to screen the database metadata.");
+        	System.out.println("7. Enter a valid SELECT/UPDATE/INSERT/DELETE SQL command.");
+        	System.out.println("8. Return to login screen.");
+        	System.out.println("9. Exit the program.");
         	
         	userInput = in.nextInt();
         	in.nextLine();
@@ -202,7 +207,56 @@ private static final int DB_DNE = 1049;
         		case 1: // Search for an actor
             		searchActor();
             		break;
-        		case 2: { // Add an actor
+        		case 2: {// Add a movie
+        			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        			String title = null;
+        			String director = null;
+        			String year = null;
+        			String firstName = null;
+        			String lastName = null;
+        			String genre = null;
+        			int result = 3;
+        			try {
+	        			System.out.println("Enter the movie's name: ");
+	        			title = reader.readLine();
+	        			System.out.println("Enter the director's name: ");
+	        			director = reader.readLine();
+	        			System.out.println("Enter the year the movie was released: ");
+	        			year = reader.readLine();
+	        			System.out.println("Enter the primary star's first name. Leave blank if the actor has only one name.");
+	        			firstName = reader.readLine();
+	        			if (firstName == null) {
+	        				firstName = "";
+	        			}
+	        			System.out.println("Enter the primary star's last name or only name.");
+	        			lastName = reader.readLine();
+	        			System.out.println("Enter the movie's genre.");
+	        			genre = reader.readLine();
+	        			CallableStatement call = connection.prepareCall("{CALL add_movie(?, ?, ?, ?, ?, ?, ?)}");
+	        			call.registerOutParameter(7, Types.INTEGER);
+	        			call.setString("m_title", title);
+	        			call.setString("m_year", year);
+	        			call.setString("m_director", director);
+	        			call.setString("genre", genre);
+	        			call.setString("star_fname", firstName);
+	        			call.setString("star_lname", lastName);
+	        			call.execute();
+	        			result = call.getInt(7);
+	        			System.out.println("Result Code: " + result);
+	        			switch (result) {
+	        				case 0: System.out.println("Movie insertion successful."); break;
+	        				case 1: System.out.println("Movie insertion failed. Invalid input."); break;
+	        				case 2: System.out.println("Movie insertion failed. Movie already exists."); break;
+	        				default: System.out.println("Movie insertion failed. Unknown Error.");
+	        			}
+        			} catch (IOException e) {
+        				System.out.println("System input reader failed. Returning to the main menu.");
+        			} catch (SQLException e) {
+        				System.err.println("Database query failed. Returning to the main menu.");
+        			}
+        			break;
+        		}
+        		case 3: { // Add an actor
         			System.out.println("Enter the first name of the star here (if star has one name only, type blank to leave empty):");
         			String firstName = in.next();
         			if(firstName.equals("blank"))
@@ -239,7 +293,7 @@ private static final int DB_DNE = 1049;
                     System.out.println("Actor has been added");
         			}
                 	break;
-        		case 3: { // Add a customer
+        		case 4: { // Add a customer
 	        		System.out.println("Enter the first name of the customer here (if customer has one name only, type blank to leave empty):");
 	        		String firstName = in.next();
 	    			if(firstName.equals("blank"))
@@ -280,7 +334,7 @@ private static final int DB_DNE = 1049;
 	                System.out.println("Query has been processed");
         		}
         		break;
-	        	case 4: { // Delete a customer
+	        	case 5: { // Delete a customer
 		    		System.out.println("Please enter a selection from below:");
 		        	System.out.println("1. Delete customer by first and last name");
 		    		System.out.println("2. Delete customer by id");
@@ -314,7 +368,7 @@ private static final int DB_DNE = 1049;
 		    		
 		        }
 		        break;
-	        	case 5: { // Print metadata for tables
+	        	case 6: { // Print metadata for tables
 		        	System.out.println("Please make a selection below:");
 		        	System.out.println("1. Get metadata for a specific table");
 		        	System.out.println("2. Get all metadata for the database");
@@ -365,7 +419,7 @@ private static final int DB_DNE = 1049;
 		        	}
 		        }
 	        	break;
-	        	case 6: { //Enter SQL command
+	        	case 7: { //Enter SQL command
 		        	System.out.println("Please make a selection below:");
 		        	System.out.println("1. Make a valid SELECT SQL command");
 		        	System.out.println("2. Make a valid UPDATE SQL command");
@@ -450,8 +504,8 @@ private static final int DB_DNE = 1049;
 		        	
 		        }
 	        	break;
-	        	case 7: loggedIn = false; return; //Log out
-	        	case 8: exit = true; return; // Exit the system
+	        	case 8: loggedIn = false; return; //Log out
+	        	case 9: exit = true; return; // Exit the system
 	        	default: {
 	        		System.out.println("Invalid Option");
 	        	}

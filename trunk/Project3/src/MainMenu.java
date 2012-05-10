@@ -198,8 +198,9 @@ private static final int DB_DNE = 1049;
         	System.out.println("5. Delete a customer from the database.");
         	System.out.println("6. Print to screen the database metadata.");
         	System.out.println("7. Enter a valid SELECT/UPDATE/INSERT/DELETE SQL command.");
-        	System.out.println("8. Return to login screen.");
-        	System.out.println("9. Exit the program.");
+        	System.out.println("8. Generate a report on database issues.");
+        	System.out.println("9. Return to login screen.");
+        	System.out.println("10. Exit the program.");
         	
         	userInput = in.nextInt();
         	in.nextLine();
@@ -504,8 +505,11 @@ private static final int DB_DNE = 1049;
 		        	
 		        }
 	        	break;
-	        	case 8: loggedIn = false; return; //Log out
-	        	case 9: exit = true; return; // Exit the system
+	        	case 8: ProblemReport report = new ProblemReport(username, password, connection);
+	        		System.out.println("Report Address: " + report.generateReport());
+	        		break;
+	        	case 9: loggedIn = false; return; //Log out
+	        	case 10: exit = true; return; // Exit the system
 	        	default: {
 	        		System.out.println("Invalid Option");
 	        	}

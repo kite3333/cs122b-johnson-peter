@@ -140,7 +140,7 @@ public class ProblemReport {
 			writer.write("\t<li><a href=\"#invalidBirthdates\">Stars With Invalid Birthdates</a></li>"); writer.newLine();
 			writer.write("\t<li><a href=\"#invalidEmails\">Customers With Invalid Email Addresses</a></li>"); writer.newLine();
 			writer.write("</ul>"); writer.newLine();
-			writer.write("<li><a name=\"sameMovies\"></a>");
+			writer.write("<a name=\"sameMovies\"></a>");
 			writeResults(getResultSet(QUERY_SAME_MOVIES), "Duplicate Movies");
 			writer.write("<a name=\"sameStars\"></a>");
 			writeResults(getResultSet(QUERY_SAME_STARS), "Duplicate Stars");

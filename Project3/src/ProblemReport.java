@@ -57,9 +57,7 @@ public class ProblemReport {
 	private final static String QUERY_SAME_GENRES = "SELECT one.id, one.name FROM genres as one, genres as two WHERE " +
 			"one.name = two.name AND one.id != two.id GROUP BY one.id ORDER BY one.name";
 	
-	private final static String QUERY_NOT_BORN_YET = "SELECT id, first_name, last_name, dob FROM stars WHERE dob >= DATE(NOW());";
-	
-	private final static String QUERY_MOVIE_TOO_OLD = "SELECT id, title, year FROM movies WHERE year < '1900-01-01'";
+	private final static String QUERY_NOT_BORN_YET = "SELECT id, first_name, last_name, dob FROM stars WHERE dob >= DATE(NOW()) OR dob < '1900-01-01';";
 	
 	private final static String QUERY_BAD_EMAIL = "SELECT id, first_name, last_name FROM customers WHERE email NOT IN " +
 			"(SELECT email FROM stars WHERE email LIKE '%@%');";
@@ -140,7 +138,6 @@ public class ProblemReport {
 			writer.write("\t<li><a href=\"#starsNoLastName\">Stars Without A Last Name</a></li>"); writer.newLine();
 			writer.write("\t<li><a href=\"#expiredCreditCards\">Customers With Expired Credit Cards</a></li>"); writer.newLine();
 			writer.write("\t<li><a href=\"#invalidBirthdates\">Stars With Invalid Birthdates</a></li>"); writer.newLine();
-			writer.write("\t<li><a href=\"#tooOldMovies\">Movies Made Before 1900</a></li>"); writer.newLine();
 			writer.write("\t<li><a href=\"#invalidEmails\">Customers With Invalid Email Addresses</a></li>"); writer.newLine();
 			writer.write("</ul>"); writer.newLine();
 			writer.write("<li><a name=\"sameMovies\"></a>");
@@ -167,8 +164,6 @@ public class ProblemReport {
 			writeResults(getResultSet(QUERY_EXPIRED_ACTIVE_CREDIT_CARDS), "Customers With Expired Credit Cards");
 			writer.write("<a name=\"invalidBirthdates\"></a>");
 			writeResults(getResultSet(QUERY_NOT_BORN_YET), "Stars With Invalid Birthdates");
-			writer.write("<a name=\"tooOldMovies\"></a>");
-			writeResults(getResultSet(QUERY_MOVIE_TOO_OLD), "Movies That Are Really Old (Before 1900)");
 			writer.write("<a name=\"invalidEmails\"></a>");
 			writeResults(getResultSet(QUERY_BAD_EMAIL), "Customers With Invalid Email Addresses");
 			writer.write("\n</body>\n</html>");
@@ -198,7 +193,6 @@ public class ProblemReport {
 			System.err.print("ERROR: Class does not exist.");
 			e1.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

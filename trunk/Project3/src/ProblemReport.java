@@ -13,13 +13,9 @@ import java.util.GregorianCalendar;
 
 
 public class ProblemReport {
-	
-	//Connection Fields
-	String username = null;
-	String password = null;
+
 	private Connection connection;
-	
-	BufferedWriter writer = null;
+	private BufferedWriter writer = null;
 	
 	//MYSQL QUERIES
 	private final static String QUERY_NO_FIRST_OR_LAST_NAME = "SELECT id, dob FROM stars WHERE " +
@@ -32,7 +28,7 @@ public class ProblemReport {
 			"last_name IS NULL OR last_name = '';";
 	
 	private final static String QUERY_EXPIRED_ACTIVE_CREDIT_CARDS = "SELECT customers.id, customers.first_name, "+
-			"customers.last_name, email, creditcards.id, expiration FROM customers, creditcards WHERE customers.cc_id = creditcards.id AND " +
+			"customers.last_name, email, customers.cc_id, expiration FROM customers, creditcards WHERE customers.cc_id = creditcards.id AND " +
 			"expiration < DATE(NOW());";	
 	
 	private final static String QUERY_MOVIES_WITH_NO_GENRES = "SELECT id, title, year FROM movies WHERE id NOT IN " +
@@ -57,15 +53,13 @@ public class ProblemReport {
 	private final static String QUERY_SAME_GENRES = "SELECT one.id, one.name FROM genres as one, genres as two WHERE " +
 			"one.name = two.name AND one.id != two.id GROUP BY one.id ORDER BY one.name";
 	
-	private final static String QUERY_NOT_BORN_YET = "SELECT id, first_name, last_name, dob FROM stars WHERE dob >= DATE(NOW()) OR dob < '1900-01-01';";
+	private final static String QUERY_INVALID_BIRTHDATE = "SELECT id, first_name, last_name, dob FROM stars WHERE dob >= DATE(NOW()) OR dob < '1900-01-01';";
 	
-	private final static String QUERY_BAD_EMAIL = "SELECT id, first_name, last_name FROM customers WHERE email NOT IN " +
+	private final static String QUERY_BAD_EMAIL = "SELECT id, first_name, last_name, email FROM customers WHERE email NOT IN " +
 			"(SELECT email FROM stars WHERE email LIKE '%@%');";
 
 	//CONSTRUCTORS
-	public ProblemReport(String user, String pw, Connection con) {
-		username = user;
-		password = pw;
+	public ProblemReport(Connection con) {
 		connection = con; //connection parameter is assumed to be working.
 	}
 
@@ -77,6 +71,10 @@ public class ProblemReport {
 	
 	private void writeResults(ResultSet result, String title) throws SQLException, IOException {
 		ResultSetMetaData setData = result.getMetaData();
+		//Are we working with a "duplicate" section of the report?
+		boolean duplicateTable = title.equals("Duplicate Movies") || title.equals("Duplicate Stars") || 
+				title.equals("Duplicate Genres");
+		int count = -1;
 		writer.write("<h2>" + title + "</h2>"); 
 		writer.newLine();
 		writer.write("<a href=\"#top\">Back To The Top</a>");
@@ -88,12 +86,39 @@ public class ProblemReport {
 			for (int i = 1; i <= setData.getColumnCount(); i++) {
 				writer.write("<th>" + setData.getColumnName(i) + "</th>");
 			}
+			if (duplicateTable) {
+				writer.write("<th># of Affiliates</th>");
+			}
 			writer.write("</tr>");
 			writer.newLine();
 			do {
 				writer.write("\t<tr>");
-				for (int i = 1; i <= setData.getColumnCount(); i++)
+				for (int i = 1; i <= setData.getColumnCount(); i++) {
 					writer.write("<td>" + result.getString(i) + "</td>");
+				}
+				if (duplicateTable) {
+					writer.write("<td");
+					if (title.contains("Genres")) {
+						count = getGenreUseCount(result.getString(1));
+						if (count == 0) {
+							writer.write(" class=\"error\"");
+						}
+					}
+					else if (title.contains("Movies")) {
+						count = getMovieUseCount(result.getString(1));
+						if (count == 0) {
+							writer.write(" class=\"error\"");
+						}
+					}
+					if (title.contains("Stars")) {
+						count = getStarUseCount(result.getString(1));
+						if (count == 0) {
+							writer.write(" class=\"error\"");
+						}
+					}
+					writer.write(">" + count + "</td>");
+					count = -1; //reset count
+				}
 				writer.write("</tr>");
 				writer.newLine();
 			}
@@ -105,6 +130,24 @@ public class ProblemReport {
 		 writer.newLine();
 	}
 	
+	private int getStarUseCount(String id) throws SQLException {
+		ResultSet results = getResultSet("SELECT COUNT(star_id) FROM stars_in_movies WHERE star_id = '" + id + "';");
+		results.next();
+		return results.getInt(1);
+	}
+
+	private int getMovieUseCount(String id) throws SQLException {
+		ResultSet results = getResultSet("SELECT COUNT(movie_id) FROM stars_in_movies WHERE movie_id = '" + id + "';");
+		results.next();
+		return results.getInt(1);
+	}
+
+	public int getGenreUseCount(String id) throws SQLException {
+		ResultSet results = getResultSet("SELECT COUNT(genre_id) FROM genres_in_movies WHERE genre_id = '" + id + "';");
+		results.next();
+		return results.getInt(1);
+	}
+	
 	public String generateReport() throws SQLException {
 		GregorianCalendar calendar = new GregorianCalendar();
 		String date = calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + 
@@ -112,6 +155,22 @@ public class ProblemReport {
 				calendar.get(Calendar.MINUTE) + ")";
 		File file = new File("issues_report " + date + ".html");
 		try {
+			//Get data from database
+			ResultSet sameMovies = getResultSet(QUERY_SAME_MOVIES);
+			ResultSet sameStars = getResultSet(QUERY_SAME_STARS);
+			ResultSet sameGenres = getResultSet(QUERY_SAME_GENRES);
+			ResultSet moviesNoStars = getResultSet(QUERY_MOVIES_WITH_NO_STARS);
+			ResultSet starsNoMovies = getResultSet(QUERY_STARS_WITH_NO_MOVIES);
+			ResultSet genresNoMovies = getResultSet(QUERY_GENRES_WITH_NO_MOVIES);
+			ResultSet moviesNoGenres = getResultSet(QUERY_MOVIES_WITH_NO_GENRES);
+			ResultSet starsNoName = getResultSet(QUERY_NO_FIRST_OR_LAST_NAME);
+			ResultSet starsNoFirstName = getResultSet(QUERY_NO_FIRST_NAME);
+			ResultSet starsNoLastName = getResultSet(QUERY_NO_LAST_NAME);
+			ResultSet expiredCreditCards = getResultSet(QUERY_EXPIRED_ACTIVE_CREDIT_CARDS);
+			ResultSet invalidBirthdates = getResultSet(QUERY_INVALID_BIRTHDATE);
+			ResultSet invalidEmails = getResultSet(QUERY_BAD_EMAIL);
+			
+			//Write data to report file
 			writer = new BufferedWriter(new FileWriter(file));
 			writer.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" " +
 					"\"http://www.w3.org/TR/html4/loose.dtd\">"); writer.newLine();
@@ -141,31 +200,31 @@ public class ProblemReport {
 			writer.write("\t<li><a href=\"#invalidEmails\">Customers With Invalid Email Addresses</a></li>"); writer.newLine();
 			writer.write("</ul>"); writer.newLine();
 			writer.write("<a name=\"sameMovies\"></a>");
-			writeResults(getResultSet(QUERY_SAME_MOVIES), "Duplicate Movies");
+			writeResults(sameMovies, "Duplicate Movies");
 			writer.write("<a name=\"sameStars\"></a>");
-			writeResults(getResultSet(QUERY_SAME_STARS), "Duplicate Stars");
+			writeResults(sameStars, "Duplicate Stars");
 			writer.write("<a name=\"sameGenres\"></a>");
-			writeResults(getResultSet(QUERY_SAME_GENRES), "Duplicate Genres");
+			writeResults(sameGenres, "Duplicate Genres");
 			writer.write("<a name=\"moviesNoStars\"></a>");
-			writeResults(getResultSet(QUERY_MOVIES_WITH_NO_STARS), "Movies Without Any Stars");
+			writeResults(moviesNoStars, "Movies Without Any Stars");
 			writer.write("<a name=\"starsNoMovies\"></a>");
-			writeResults(getResultSet(QUERY_STARS_WITH_NO_MOVIES), "Stars Without Any Movies");
+			writeResults(starsNoMovies, "Stars Without Any Movies");
 			writer.write("<a name=\"genresNoMovies\"></a>");
-			writeResults(getResultSet(QUERY_GENRES_WITH_NO_MOVIES), "Genres Without Any Movies");
+			writeResults(genresNoMovies, "Genres Without Any Movies");
 			writer.write("<a name=\"moviesNoGenres\"></a>");
-			writeResults(getResultSet(QUERY_MOVIES_WITH_NO_GENRES), "Movies Without Any Genres");
+			writeResults(moviesNoGenres, "Movies Without Any Genres");
 			writer.write("<a name=\"starsNoName\"></a>");
-			writeResults(getResultSet(QUERY_NO_FIRST_OR_LAST_NAME), "Stars Without A Name");
+			writeResults(starsNoName, "Stars Without A Name");
 			writer.write("<a name=\"starsNoFirstName\"Stars Without A First Name</a>");
-			writeResults(getResultSet(QUERY_NO_FIRST_NAME), "Stars Without A First Name");
+			writeResults(starsNoFirstName, "Stars Without A First Name");
 			writer.write("<a name=\"starsNoLastName\"></a>");
-			writeResults(getResultSet(QUERY_NO_LAST_NAME), "Stars Without A Last Name");
+			writeResults(starsNoLastName, "Stars Without A Last Name");
 			writer.write("<a name=\"expiredCreditCards\"></a>");
-			writeResults(getResultSet(QUERY_EXPIRED_ACTIVE_CREDIT_CARDS), "Customers With Expired Credit Cards");
+			writeResults(expiredCreditCards, "Customers With Expired Credit Cards");
 			writer.write("<a name=\"invalidBirthdates\"></a>");
-			writeResults(getResultSet(QUERY_NOT_BORN_YET), "Stars With Invalid Birthdates");
+			writeResults(invalidBirthdates, "Stars With Invalid Birthdates");
 			writer.write("<a name=\"invalidEmails\"></a>");
-			writeResults(getResultSet(QUERY_BAD_EMAIL), "Customers With Invalid Email Addresses");
+			writeResults(invalidEmails, "Customers With Invalid Email Addresses");
 			writer.write("\n</body>\n</html>");
 			writer.close();
 		} catch (IOException e) {
@@ -181,7 +240,7 @@ public class ProblemReport {
     		// Incorporate mySQL driver
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection con = DriverManager.getConnection("jdbc:mysql:///moviedb", "root", "");
-			ProblemReport report = new ProblemReport("root", "", con);
+			ProblemReport report = new ProblemReport(con);
 			System.out.println(report.generateReport());
 		} catch (InstantiationException e1) {
 			System.err.print("ERROR: The JDBC object could not be instantiated.");

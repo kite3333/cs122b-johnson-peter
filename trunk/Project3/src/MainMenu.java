@@ -505,7 +505,7 @@ private static final int DB_DNE = 1049;
 		        	
 		        }
 	        	break;
-	        	case 8: ProblemReport report = new ProblemReport(username, password, connection);
+	        	case 8: ProblemReport report = new ProblemReport(connection);
 	        		System.out.println("Report Address: " + report.generateReport());
 	        		break;
 	        	case 9: loggedIn = false; return; //Log out

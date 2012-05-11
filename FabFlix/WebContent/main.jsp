@@ -56,5 +56,6 @@ out.println("<h2>Welcome " + firstName + " " + lastName + "</h2>");
 <form action="./checkout.jsp">
 <input type="submit" value="Go to Checkout" /></form>
 <a href="./browse.jsp">Browse the Movie Database</a><br />
-<a href="./search.jsp">Search the Movie Database</a>
+<a href="./search.jsp">Search the Movie Database</a><br />
+<a href="./fuzzysearch.jsp">Fuzzy Search the Movie Database</a>
 <% out.println(ServletUtilities.pageEnd()); %>

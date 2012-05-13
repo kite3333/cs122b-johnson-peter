@@ -161,7 +161,6 @@ else { //Make Search Query
 	}
 	query = selectBuilder.toString() + clauseBuilder.toString() + "GROUP BY m.id ORDER BY m.title ASC LIMIT 10 OFFSET 0;";
 }
-System.out.println(query);
 ResultSet rs = statement.executeQuery(query);
 %>
 

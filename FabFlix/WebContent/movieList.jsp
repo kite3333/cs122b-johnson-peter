@@ -68,12 +68,12 @@ out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=25\">25</a
 out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=50\">50</a>");
 out.println("<a href=\"./movieList.jsp?" + urlParameters + "&pageSize=100\">100</a>");	
 
-//sorting here
+//SORTING
 String sortByTitle = request.getParameter("sortByTitle");
 String sortByYear = request.getParameter("sortByYear");
-
 String columnToSort = "m.title";
 String sort = "ASC";
+
 if(sortByYear != null)
 {
 	columnToSort = "m.year";
@@ -100,39 +100,34 @@ query.append("stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg
 if (genre != null || titleStart != null) { //Add Browse Query Terms
 	if(genre != null)
 	{ 
-		query.append("AND g.name = '");
-		query.append(genre);
-		query.append(" "); 				
+		query.append("AND g.name = '" + genre + " "); 				
 	}
 	//Title overrides genre browse
 	else if(titleStart != null)
 	{
-		query.append("AND m.title LIKE '");
-		query.append(titleStart);
-		query.append("%' ");	
+		query.append("AND m.title LIKE '" + titleStart + "%' ");	
 	}
 }
 else { //Add Search Query Terms
 	if (inTitle != null || inYear != null || inDirector != null || inActorFName != null || inActorLName != null) {
 		if (inTitle != null && !inTitle.isEmpty()) {
-			query.append("AND m.title LIKE '%" + inTitle + "%'");
+			query.append("AND m.title LIKE '%" + inTitle + "%' ");
 		}
 		if (inYear != null && !inYear.isEmpty()) {
-			query.append("AND m.year = '" + inYear + "'");
+			query.append("AND m.year = '" + inYear + "' ");
 		}
 		if (inDirector != null && !inDirector.isEmpty()) {
-			query.append("AND m.director LIKE '%" + inDirector + "%'");
+			query.append("AND m.director LIKE '%" + inDirector + "%' ");
 		}
 		if (inActorFName != null && !inActorFName.isEmpty()) {
-			query.append("AND a.first_name = '" + inActorFName + "'");
+			query.append("AND a.first_name = '" + inActorFName + "' ");
 		}
 		if (inActorLName != null && !inActorLName.isEmpty()) {
-			query.append("AND a.last_name = '" + inActorLName + "'");
+			query.append("AND a.last_name = '" + inActorLName + "' ");
 		}
 	}
 }
-query.append(" GROUP BY m.id ORDER BY " + columnToSort + " " + sort + " LIMIT " + limit + " OFFSET " + offset + ";");
-System.out.println(query);
+query.append("GROUP BY m.id ORDER BY " + columnToSort + " " + sort + " LIMIT " + limit + " OFFSET " + offset + ";");
 ResultSet rs = statement.executeQuery(query.toString());
 %>
 

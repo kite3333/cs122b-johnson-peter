@@ -1,104 +1,62 @@
 <%@ page import ="
-	java.io.*,
 	java.sql.Connection,
 	java.sql.DriverManager,
 	java.sql.ResultSet,
-	java.sql.SQLException,
 	java.sql.Statement,
-	java.util.*,
 	coreservlets.ServletUtilities"
 %>
 <%
-out.print(ServletUtilities.headWithTitle("Fabflix - Star Page"));
-String star = request.getParameter("star");
-
-int o = star.indexOf(' ');
-String firstname = star.substring(0, o);
-String lastname = star.substring(o);
-lastname = lastname.trim();
-firstname = firstname.trim();
-
-// System.out.println("first name =" + firstname + " last name =" + lastname);
+int star = Integer.parseInt(request.getParameter("star"));
 
 String loginUser = "root";
 String loginPasswd = "";
 String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
 
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-// Declare our statement
 Statement statement = dbcon.createStatement();
 
-String query = "select stars.id, stars.first_name, stars.last_name, stars.dob, stars.photo_url, group_concat(distinct movies.title separator ', ') from stars, stars_in_movies, movies where stars.first_name = " + 
-"'" + firstname + "'" +  " AND stars.last_name = " + "'" + lastname + "'" + " AND stars.id = stars_in_movies.star_id AND stars_in_movies.movie_id = movies.id;";
-%>
-<h2>Results</h2>
-<TABLE border=1>
-<tr>
-	<td>ID</td>
-	<td>First Name</td>
-	<td>Last Name</td>
-	<td>DOB</td>
-	<td>Picture</td>
-	<td>List of Movies</td>
-</tr>
-<%
-// Perform the query
+String query = "select stars.id, stars.first_name, stars.last_name, stars.dob, stars.photo_url, group_concat(distinct movies.title separator ', ')" +
+	"from stars, stars_in_movies, movies where stars.id = '" + star + "' AND stars.id = stars_in_movies.star_id AND stars_in_movies.movie_id = movies.id;";
 ResultSet rs = statement.executeQuery(query);
-while(rs.next())
-{
 
-	int id = rs.getInt("id");
-	String fname = rs.getString("first_name");
-	String lname = rs.getString("last_name");
-	String dob = rs.getString("dob");
-	String picture = rs.getString("photo_url");
+if (rs.next()) {
+	String firstName = rs.getString("first_name");
+	String lastName = rs.getString("last_name");
 	String listOfMovies = rs.getString("group_concat(distinct movies.title separator ', ')");
-
-	String movie_copy = listOfMovies;
-	String j = "";
 	
-    int count = 0;
-    for (int i=0; i < movie_copy.length(); i++)
-    {
-        if (movie_copy.charAt(i) == ',')
-        {
-             count++;
-        }
-    }
-	
-    if(count == 0)
-    {
-    	movie_copy = movie_copy.trim();
-    	j += "<a href= " + '"' + "./movieList.jsp?title=" + movie_copy + '"' + ">" + movie_copy + "</a>";
-    }
-    
-    if(count != 0)
-    {	
-    for(int i = 0; i < count; i++)
-	{
-		int l = movie_copy.indexOf(",");
-		j += "<a href= " + '"' + "./movieList.jsp?title=" + movie_copy.substring(0, l) + '"' + ">" + movie_copy.substring(0, l) + "</a>" + ", ";
-		movie_copy = movie_copy.substring(l+2);
-// 		System.out.println("star_copy is now " + movie_copy);
+	//Create the movie links list
+	StringBuilder movies = new StringBuilder();
+	if (listOfMovies != null) {
+		int start = 0;
+		int end = listOfMovies.indexOf(',', start);
+		while (end > 0) {
+			movies.append("<a href=\"./movieList.jsp?title=");
+			movies.append(listOfMovies.substring(start, end));
+			movies.append("\">");
+			movies.append(listOfMovies.substring(start, end));
+			movies.append("</a>");
+			start = end + 2;
+			end = listOfMovies.indexOf(',', start);
+		}
+		movies.append("<a href=\"./movieList.jsp?title=");
+		movies.append(listOfMovies.substring(start));
+		movies.append("\">");
+		movies.append(listOfMovies.substring(start));
+		movies.append("</a>");
 	}
-    //we take the last one too
-    movie_copy = movie_copy.trim();
-    j += "<a href= " + '"' + "./movieList.jsp?title=" + movie_copy + '"' + ">" + movie_copy + "</a>" ;
-    }
-	
 
-		out.println("<tr>" +
-            "<td>" + id + "</td>" +
-            "<td>" + fname + "</td>" +
-            "<td>" + lname + "</td>" +
-            "<td>" + dob + "</td>" +
-            "<td>" + "<img src=" + "'" + picture + "'" + "/>" + "</td>" +
-            "<td>" + j + "</td>" +
-            "</tr>");
-
-
-		j = "";
-}
+	out.print(ServletUtilities.headWithTitle("Fabflix - Star: " + firstName + " " + lastName));
+	out.print("<h1>" + firstName + " " + lastName + "</h1>");
 %>
-</TABLE>
-<% out.println(ServletUtilities.pageEnd()); %>
+<img src="<%=rs.getString("photo_url")%>" />
+<ul>
+	<li>ID: <%=rs.getInt("id")%></li>
+	<li>DOB: <%=rs.getString("dob") %></li>
+	<li>Movies: <%=movies.toString()%></li>
+</ul>
+<%
+}
+else {
+	out.print(ServletUtilities.headWithTitle("Fabflix - Star: NOT FOUND"));
+}
+out.println(ServletUtilities.pageEnd()); %>

@@ -5,15 +5,9 @@
 	fabflix.Item"
 	language = "java"
 %>
-<!-- Would be nice to have a nifty in-window pop-up -->
 <p>Shopping Cart</p>
 <%
-	String custID = (String) session.getAttribute("custID");
 	ShoppingCart cart = (ShoppingCart) session.getAttribute("cart");
-	if (custID == null || cart == null || cart.isEmpty()) {
-		out.println("<p align=\"center\">Your Cart is Empty</p>");
-	}
-	else {
 %>
 <form 
 	<%
@@ -30,7 +24,7 @@
 		String nextID = null;
 		while (parameters.hasMoreElements()) {
 			nextID = parameters.nextElement();
-			if (nextID.equals("title")) { //Workaround for "Add to Cart" buttons.
+			if (nextID.equals("title")) { //Ignore parameters named "title". Workaround for "Add to Cart" buttons.
 				continue;
 			}
 			if (request.getParameter(nextID) == null || //No quantity value or value <= 0
@@ -73,4 +67,3 @@
 	</table>
 	<input type="submit" value="Update Cart" />
 </form>
-<%	}//endElse %>

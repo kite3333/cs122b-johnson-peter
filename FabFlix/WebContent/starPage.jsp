@@ -34,7 +34,7 @@ if (rs.next()) {
 			movies.append(listOfMovies.substring(start, end));
 			movies.append("\">");
 			movies.append(listOfMovies.substring(start, end));
-			movies.append("</a>");
+			movies.append("</a>, ");
 			start = end + 2;
 			end = listOfMovies.indexOf(',', start);
 		}

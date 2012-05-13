@@ -36,10 +36,7 @@ String inActorFName = request.getParameter("actor_first");
 String inActorLName = request.getParameter("actor_last");
 
 //Query Variables
-StringBuilder selectBuilder = new StringBuilder();
-StringBuilder clauseBuilder = new StringBuilder();
-boolean useAnd = false;
-String query = null;
+StringBuilder query = new StringBuilder();
 
 //Database Variables
 String loginUser = "root";
@@ -94,74 +91,49 @@ urlParameters += "&sortByYear=" + sortByYear;
 Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 Statement statement = dbcon.createStatement();
 
+//Basic Query
+query.append("SELECT m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, GROUP_CONCAT(distinct g.name separator ', '), ");
+query.append("GROUP_CONCAT(DISTINCT a.id, ' ', a.first_name, ' ', a.last_name SEPARATOR ', ') FROM movies m, genres_in_movies mg, genres g, ");
+query.append("stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id ");
+
 //Browse overrides Search
-if (genre != null || titleStart != null) { //Make Browse Query
-	try{
-		if(genre != null)
-		{ 
-			query = "SELECT m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, GROUP_CONCAT(distinct g.name separator ', '), "
-				+ "GROUP_CONCAT(DISTINCT a.id, ' ', a.first_name, ' ', a.last_name SEPARATOR ', ') FROM movies m, genres_in_movies mg, genres g, "
-				+ "stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id " 
-				+ "AND g.name = '" + genre + "' GROUP BY m.id ORDER BY " + columnToSort + " " + sort +  " LIMIT " +  limit + " OFFSET " + 0 + ";"; 				
-		}
-		//Title overrides genre browse
-		else if(titleStart != null)
-		{
-			query = "select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, GROUP_CONCAT(DISTINCT g.name SEPARATOR ', '), "
-				+ "GROUP_CONCAT(DISTINCT a.id, ' ', a.first_name, ' ', a.last_name SEPARATOR ', ') FROM movies m, genres_in_movies mg, genres g, "
-				+ "stars_in_movies ma, stars a WHERE mg.movie_id = m.id AND g.id = mg.genre_id AND ma.movie_id = m.id AND a.id = ma.star_id AND " 
-				+ "m.title LIKE '" + titleStart + "%' GROUP BY m.id ORDER BY " + columnToSort + " " + sort + " LIMIT " + limit + " OFFSET " + offset + ";";	
-		}
-	}	
-	catch(NullPointerException e)
+if (genre != null || titleStart != null) { //Add Browse Query Terms
+	if(genre != null)
+	{ 
+		query.append("AND g.name = '");
+		query.append(genre);
+		query.append(" "); 				
+	}
+	//Title overrides genre browse
+	else if(titleStart != null)
 	{
-	
+		query.append("AND m.title LIKE '");
+		query.append(titleStart);
+		query.append("%' ");	
 	}
 }
-else { //Make Search Query
-	selectBuilder.append("select m.id, m.title, m.year, m.director, m.banner_url, m.trailer_url, GROUP_CONCAT(DISTINCT g.name SEPARATOR ', '), "
-		+ "GROUP_CONCAT(DISTINCT a.id, ' ', a.first_name, ' ', a.last_name SEPARATOR ', ') FROM movies m LEFT JOIN genres_in_movies "
-		+ "mg ON mg.movie_id = m.id LEFT JOIN genres g ON g.id = mg.genre_id LEFT JOIN stars_in_movies ma ON ma.movie_id = m.id LEFT JOIN "
-		+ "stars a ON a.id = ma.star_id");
+else { //Add Search Query Terms
 	if (inTitle != null || inYear != null || inDirector != null || inActorFName != null || inActorLName != null) {
-		clauseBuilder.append(" WHERE");
 		if (inTitle != null && !inTitle.isEmpty()) {
-			clauseBuilder.append(" m.title LIKE '%" + inTitle + "%'");
-			useAnd = true;
+			query.append("AND m.title LIKE '%" + inTitle + "%'");
 		}
 		if (inYear != null && !inYear.isEmpty()) {
-			if (useAnd) {
-				clauseBuilder.append(" AND");
-			}
-			clauseBuilder.append(" m.year = '" + inYear + "'");
-			useAnd = true;
+			query.append("AND m.year = '" + inYear + "'");
 		}
 		if (inDirector != null && !inDirector.isEmpty()) {
-			if (useAnd) {
-				clauseBuilder.append(" AND");
-			}
-			clauseBuilder.append(" m.director LIKE '%" + inDirector + "%'");
-			useAnd = true;
+			query.append("AND m.director LIKE '%" + inDirector + "%'");
 		}
 		if (inActorFName != null && !inActorFName.isEmpty()) {
-			if (useAnd) {
-				clauseBuilder.append(" AND");
-			}
-			clauseBuilder.append(" a.first_name = '" + inActorFName + "'");
-			useAnd = true;
+			query.append("AND a.first_name = '" + inActorFName + "'");
 		}
-	
 		if (inActorLName != null && !inActorLName.isEmpty()) {
-			if (useAnd) {
-				clauseBuilder.append(" AND");
-			}
-			clauseBuilder.append(" a.last_name = '" + inActorLName + "'");
-			useAnd = true;
+			query.append("AND a.last_name = '" + inActorLName + "'");
 		}
 	}
-	query = selectBuilder.toString() + clauseBuilder.toString() + "GROUP BY m.id ORDER BY m.title ASC LIMIT 10 OFFSET 0;";
 }
-ResultSet rs = statement.executeQuery(query);
+query.append(" GROUP BY m.id ORDER BY " + columnToSort + " " + sort + " LIMIT " + limit + " OFFSET " + offset + ";");
+System.out.println(query);
+ResultSet rs = statement.executeQuery(query.toString());
 %>
 
 <h1>Fabflix - Browse Results</h1>

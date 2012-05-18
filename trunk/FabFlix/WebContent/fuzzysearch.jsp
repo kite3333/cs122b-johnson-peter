@@ -33,7 +33,7 @@ document.write(ed("a","Miss Congeniality 2: ARMED AND FABULOUS"));
 document.write(" SKIP ");
 document.write(ed("a","Star Wars: Episode III - Revenge of the Sith"));
 document.write(" SKIP ");
-document.write(ed("a","Bicentennial Man"));
+document.write(ed("troy","terminator"));
 
 </script>
 <%

@@ -283,10 +283,12 @@ while(rs.next())
 /*     if(k != null)
     { */
     	out.println("RESULT " + k);
+    /* 
+  	int test = Integer.parseInt(k.toString());
+  	System.out.println("test is " + test); */
     
- /*    
-     if((k.toString().equals("1")) || (k.toString().equals("2")) || (k.toString().equals("3")) || (k == null))
-     { */
+ /*     if((k.equals("1")) || (k.equals("2")) || (k.equals("3")) || (k == null))
+     {  */
     	out.println("<tr>" +
     
             "<td>" + "<a href=\"./shoppingCart.jsp?" + id + "=1&title=" + titleOfMovie + "\">Add to Cart</a></td>" +
@@ -302,9 +304,9 @@ while(rs.next())
             "</tr>");
 
 		j = "";
-/*      }
-    } */
-}
+     /*  } */
+    } 
+
 }
 catch(NullPointerException e)
 {

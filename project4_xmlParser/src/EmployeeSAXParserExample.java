@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-public class SAXParserExample extends DefaultHandler{
+public class EmployeeSAXParserExample extends DefaultHandler{
 
 	List myEmpls;
 	
@@ -24,7 +24,7 @@ public class SAXParserExample extends DefaultHandler{
 	private Employee tempEmp;
 	
 	
-	public SAXParserExample(){
+	public EmployeeSAXParserExample(){
 		myEmpls = new ArrayList();
 	}
 	
@@ -102,7 +102,7 @@ public class SAXParserExample extends DefaultHandler{
 	}
 	
 	public static void main(String[] args){
-		SAXParserExample spe = new SAXParserExample();
+		EmployeeSAXParserExample spe = new EmployeeSAXParserExample();
 		spe.runExample();
 	}
 	

@@ -254,6 +254,7 @@ private static final int DB_DNE = 1049;
         				System.out.println("System input reader failed. Returning to the main menu.");
         			} catch (SQLException e) {
         				System.err.println("Database query failed. Returning to the main menu.");
+        				e.printStackTrace();
         			}
         			break;
         		}

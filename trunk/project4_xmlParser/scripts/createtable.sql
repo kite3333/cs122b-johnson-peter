@@ -29,7 +29,7 @@ CREATE TABLE tbl_publisher (
 DROP TABLE IF EXISTS tbl_dblp_document CASCADE;
 CREATE TABLE tbl_dblp_document (
 	id   INTEGER  NOT NULL AUTO_INCREMENT,
-	title         VARCHAR(300) CHARACTER SET utf8,
+	title         VARCHAR(380) CHARACTER SET utf8,
 	start_page    INTEGER,
 	end_page      INTEGER,
 	year          INTEGER,

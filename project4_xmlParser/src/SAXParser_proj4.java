@@ -27,7 +27,6 @@ import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 
 public class SAXParser_proj4 extends DefaultHandler {
 

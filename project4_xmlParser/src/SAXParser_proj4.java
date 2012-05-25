@@ -31,6 +31,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class SAXParser_proj4 extends DefaultHandler {
 
 	private String tempVal;
+	private StringBuilder insertRecord = new StringBuilder();
 
 	// to maintain context
 	private Book tempBook;
@@ -117,6 +118,9 @@ public class SAXParser_proj4 extends DefaultHandler {
 	Connection connection = null;
 	
 	public SAXParser_proj4() {
+		insertRecord.append("INSERT INTO tbl_dblp_document (id, title, start_page, end_page, year, ");
+		insertRecord.append("volume, number, url, ee, cdrom, cite, crossref, isbn, series, editor_id, ");
+		insertRecord.append("booktitle_id, genre_id, publisher_id) VALUES");
 	}
 
 	public void runExample() {
@@ -146,43 +150,49 @@ public class SAXParser_proj4 extends DefaultHandler {
 			// Incorporate mySQL driver
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", "");
-			connection.setAutoCommit(false);
 			Statement myDBStm = connection.createStatement();
-			String insertRecord = "";
+			insertRecord.replace(insertRecord.length() - 1, insertRecord.length(), ";");
+			System.out.println(insertRecord.substring(insertRecord.length() - 10));
+			myDBStm.executeUpdate(insertRecord.toString());
+			
+			System.exit(-1);
 			
 			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(1, 'article'), (2, 'inproceedings')," + 
 					"(3, 'proceedings'), (4, 'book'), (5, 'incollection'), (6, 'phdthesis'), (7, 'mastersthesis'), (8, 'www');");
 
 			//this is for all people editors and authors...
-			for (int i = 0; i < editorList.size(); i++) {
-				insertRecord = "insert into tbl_people (id, name) values(" + 
-						editorTable.get(editorList.get(i)) + "," + '"' + editorList.get(i) + '"' + ");";
-				myDBStm.executeUpdate(insertRecord);
-			}
-
-			for (int i = 0; i < booktitleList.size(); i++) {
-				insertRecord = "insert into tbl_booktitle (id, title) values(" + booktitleTable.get(booktitleList.get(i)) + ","
-						+ '"' + booktitleList.get(i) + '"' + ");";
-				try{
-					myDBStm.executeUpdate(insertRecord);
-				}
-				catch(SQLException e)
-				{
-					System.out.println("found a duplicate key in insert: " + insertRecord);
-				}
-			}
-
-			for (int i = 0; i < publisherList.size(); i++) {
-				insertRecord = "insert into tbl_publisher (id, publisher_name) values(" + publisherTable.get(publisherList.get(i)) + ","
-						+ '"' + publisherList.get(i) + '"' + ");";
-				try{
-					myDBStm.executeUpdate(insertRecord);
-				}
-				catch(SQLException e)
-				{
-					System.out.println("found a duplicate key in publisher: " + insertRecord);
-				}
-			}			
+			insertRecord = new StringBuilder();
+//			insertRecord.append(b);
+//			for (int i = 0; i < editorList.size(); i++) {
+//				insertRecord = "insert into tbl_people (id, name) values(" + 
+//						editorTable.get(editorList.get(i)) + "," + '"' + editorList.get(i) + '"' + ");";
+//				myDBStm.executeUpdate(insertRecord);
+//			}
+//
+//			for (int i = 0; i < booktitleList.size(); i++) {
+//				insertRecord = "insert into tbl_booktitle (id, title) values(" + booktitleTable.get(booktitleList.get(i)) + ","
+//						+ '"' + booktitleList.get(i) + '"' + ");";
+//				try{
+//					myDBStm.executeUpdate(insertRecord);
+//				}
+//				catch(SQLException e)
+//				{
+//					System.out.println("found a duplicate key in insert: " + insertRecord);
+//				}
+//			}
+//
+//			for (int i = 0; i < publisherList.size(); i++) {
+//				insertRecord = "insert into tbl_publisher (id, publisher_name) values(" + publisherTable.get(publisherList.get(i)) + ","
+//						+ '"' + publisherList.get(i) + '"' + ");";
+//				try{
+//					myDBStm.executeUpdate(insertRecord);
+//				}
+//				catch(SQLException e)
+//				{
+//					System.out.println("found a duplicate key in publisher: " + insertRecord);
+//				}
+//			}
+			
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -208,11 +218,11 @@ public class SAXParser_proj4 extends DefaultHandler {
 			// get a new instance of parser
 			SAXParser sp = spf.newSAXParser();
 
-			String source = "small_final-data.xml";
-			String result = "small_final-data2.xml";
+//			String source = "small_final-data.xml";
+//			String result = "small_final-data2.xml";
 
-//			String source = "big_dblp-data.xml";
-//			String result = "big_dblp-data2.xml";
+			String source = "big_dblp-data.xml";
+			String result = "big_dblp-data2.xml";
 			
 			System.out.println("removing lines...");
 			Scanner s = new Scanner(new File(source));
@@ -436,149 +446,113 @@ public class SAXParser_proj4 extends DefaultHandler {
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 
-		try {
-			Connection connection = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/moviedb", "root", "");
-			Statement myDBStm = connection.createStatement();
-			String insertRecord = "";
-
-			if(qName.equalsIgnoreCase("editor"))
+		if(qName.equalsIgnoreCase("editor"))
+		{
+			if(!editorTable.containsValue(editor))
 			{
-				if(!editorTable.containsValue(editor))
-				{
-					editorTable.put(editor, editorID);
-					//System.out.println("we put in editor " + editor + editorID);
-				}
+				editorTable.put(editor, editorID);
+				//System.out.println("we put in editor " + editor + editorID);
 			}
-			else if (qName.equalsIgnoreCase("author")) {
-				int test = generator.nextInt();
-				if(!editorTable.containsValue(author))
-				{
-					editorTable.put(author, test);
+		}
+		else if (qName.equalsIgnoreCase("author")) {
+			int test = generator.nextInt();
+			if(!editorTable.containsValue(author))
+			{
+				editorTable.put(author, test);
 //					System.out.println("we put in editor " + editor + editorID);
-				}
-				multipleAuthorsList.add(test);
-			} 
-			else if (qName.equalsIgnoreCase("booktitle")) {
-				int test = generator.nextInt();
-				if(!booktitleTable.containsValue(booktitle))
-				{
-					booktitleTable.put(booktitle, test);
-					//System.out.println("we put in booktitle " + booktitle + booktitleID);
-				}
-
-			} 
-			else if (qName.equalsIgnoreCase("publisher")) {
-				if(!publisherTable.containsValue(publisher))
-				{
-					publisherTable.put(publisher, publisherID);
-//					System.out.println("we put in  " + booktitle + booktitleID);
-				}
 			}
-			else if(qName.equalsIgnoreCase("article") || qName.equalsIgnoreCase("inproceedings")
-					|| qName.equalsIgnoreCase("proceedings") || qName.equalsIgnoreCase("book") || 
-					qName.equalsIgnoreCase("incollection") || qName.equalsIgnoreCase("phdthesis") || 
-					qName.equalsIgnoreCase("mastersthesis") || qName.equalsIgnoreCase("www"))
+			multipleAuthorsList.add(test);
+		} 
+		else if (qName.equalsIgnoreCase("booktitle")) {
+			int test = generator.nextInt();
+			if(!booktitleTable.containsValue(booktitle))
 			{
-				int genreID = -99999;
-				if(qName.equals("article"))
-				{
-					genreID = 1;
-				}
-				else if(qName.equals("inproceedings"))
-				{
-					genreID = 2;
-				}
-				else if(qName.equals("proceedings"))
-				{
-					genreID = 3;
-				}
-				else if(qName.equals("books"))
-				{
-					genreID = 4;
-				}
-				else if(qName.equals("incollection"))
-				{
-					genreID = 5;
-				}
-				else if(qName.equals("phdthesis"))
-				{
-					genreID = 6;
-				}
-				else if(qName.equals("mastersthesis"))
-				{
-					genreID = 7;
-				}
-				else if(qName.equals("www"))
-				{
-					genreID = 8;
-				}				
-							
-				insertRecord = "insert into tbl_dblp_document (id, title, start_page, end_page, year, " +
-						"volume, number, url, ee, cdrom, cite, crossref, isbn, series, editor_id, " +
-						"booktitle_id, genre_id, publisher_id) values(" + 
-						'"' + dblpID + '"' + "," + 
-						'"' + title + '"' + "," + 
-						'"' + startPage + '"' + "," +
-						'"' + endPage + '"' + "," + 
-						'"' + year + '"' + "," + 
-						'"' + volume + '"' + "," + 
-						'"' + number + '"' + "," + 
-						'"' + url + '"' + "," + 
-						'"' + ee + '"' + "," + 
-						'"' + cdrom + '"' + "," + 
-						'"' + cite + '"' + "," + 
-						'"' + crossref + '"' + "," + 
-						'"' + isbn + '"' + "," +
-						'"' + series + '"' + "," + 
-						editorTable.get(editor) + "," +
-						booktitleTable.get(booktitle) + "," +
-						genreID + "," +
-						publisherTable.get(publisher) + ");";
-//						'"' + editorTable.get(editor) + '"' + "," + 
-//						'"' + booktitleTable.get(booktitle) + '"' + "," + 
-//						'"' + genreID + '"' + "," + 
-//						'"' + publisherTable.get(publisher) + '"' + ");";
-				
-				dblpID++;
-				
-				
-//				dblp_queries.add(insertRecord);
-				
-//				connection.setAutoCommit(false);
-//				psInsertRecord=connection.prepareStatement(insertRecord);
-//				psInsertRecord.addBatch();
-				
-				
-				myDBStm.executeUpdate(insertRecord);
-				//System.out.println(insertRecord);
-				editorID++;
-				booktitleID++;
-				publisherID++;
-//				authorID++;
-				//	connection.setAutoCommit(false);
-//				psInsertRecord = connection.prepareStatement(insertRecord);
-				for(int i = 0; i < multipleAuthorsList.size(); i++)
-				{
-					String author_doc_record = "insert into tbl_author_document_mapping (id, doc_id, author_id) values (null," + dblpID + "," + multipleAuthorsList.get(i) + ");";
-
-//					mapping_queries.add(author_doc_record);
-//					connection.setAutoCommit(false);
-//					author_mapping_PsInsertRecord=connection.prepareStatement(author_doc_record);
-//					author_mapping_PsInsertRecord.addBatch();
-					
-					myDBStm.executeUpdate(author_doc_record);
-					//System.out.println(author_doc_record);
-				}
-				multipleAuthorsList.clear();
-//				author_mapping_PsInsertRecord.executeBatch();
-//				psInsertRecord.executeBatch();
-//				connection.commit();
+				booktitleTable.put(booktitle, test);
+				//System.out.println("we put in booktitle " + booktitle + booktitleID);
 			}
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("something is inconsistent when parsing document end tag: " + e.getErrorCode());
+		} 
+		else if (qName.equalsIgnoreCase("publisher")) {
+			if(!publisherTable.containsValue(publisher))
+			{
+				publisherTable.put(publisher, publisherID);
+//					System.out.println("we put in  " + booktitle + booktitleID);
+			}
+		}
+		else if(qName.equalsIgnoreCase("article") || qName.equalsIgnoreCase("inproceedings")
+				|| qName.equalsIgnoreCase("proceedings") || qName.equalsIgnoreCase("book") || 
+				qName.equalsIgnoreCase("incollection") || qName.equalsIgnoreCase("phdthesis") || 
+				qName.equalsIgnoreCase("mastersthesis") || qName.equalsIgnoreCase("www"))
+		{
+			int genreID = -99999;
+			if(qName.equals("article"))
+			{
+				genreID = 1;
+			}
+			else if(qName.equals("inproceedings"))
+			{
+				genreID = 2;
+			}
+			else if(qName.equals("proceedings"))
+			{
+				genreID = 3;
+			}
+			else if(qName.equals("books"))
+			{
+				genreID = 4;
+			}
+			else if(qName.equals("incollection"))
+			{
+				genreID = 5;
+			}
+			else if(qName.equals("phdthesis"))
+			{
+				genreID = 6;
+			}
+			else if(qName.equals("mastersthesis"))
+			{
+				genreID = 7;
+			}
+			else if(qName.equals("www"))
+			{
+				genreID = 8;
+			}				
+						
+			insertRecord.append("(" + 
+					'"' + dblpID + '"' + "," + 
+					'"' + title + '"' + "," + 
+					'"' + startPage + '"' + "," +
+					'"' + endPage + '"' + "," + 
+					'"' + year + '"' + "," + 
+					'"' + volume + '"' + "," + 
+					'"' + number + '"' + "," + 
+					'"' + url + '"' + "," + 
+					'"' + ee + '"' + "," + 
+					'"' + cdrom + '"' + "," + 
+					'"' + cite + '"' + "," + 
+					'"' + crossref + '"' + "," + 
+					'"' + isbn + '"' + "," +
+					'"' + series + '"' + "," + 
+					editorTable.get(editor) + "," +
+					booktitleTable.get(booktitle) + "," +
+					genreID + "," +
+					publisherTable.get(publisher) + "),");
+			
+			dblpID++;
+			
+			//System.out.println(insertRecord);
+			editorID++;
+			booktitleID++;
+			publisherID++;
+//				authorID++;
+			//	connection.setAutoCommit(false);
+//				psInsertRecord = connection.prepareStatement(insertRecord);
+//				for(int i = 0; i < multipleAuthorsList.size(); i++)
+//				{
+//					String author_doc_record = "insert into tbl_author_document_mapping (id, doc_id, author_id) values (null," + dblpID + "," + multipleAuthorsList.get(i) + ");";		
+//					myDBStm.executeUpdate(author_doc_record);
+//				}
+			multipleAuthorsList.clear();
 		}
 
 	}

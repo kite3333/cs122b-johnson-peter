@@ -199,14 +199,26 @@ public class SAXParser_proj4 extends DefaultHandler {
 			for (int i = 0; i < booktitleList.size(); i++) {
 				insertRecord = "insert into tbl_booktitle (id, title) values(" + booktitleTable.get(booktitleList.get(i)) + ","
 						+ '"' + booktitleList.get(i) + '"' + ");";
-				myDBStm.executeUpdate(insertRecord);
+				try{
+					myDBStm.executeUpdate(insertRecord);
+				}
+				catch(SQLException e)
+				{
+					System.out.println("found a duplicate key in insert: " + insertRecord);
+				}
 				//System.out.println(insertRecord);
 			}
 
 			for (int i = 0; i < publisherList.size(); i++) {
 				insertRecord = "insert into tbl_publisher (id, publisher_name) values(" + publisherTable.get(publisherList.get(i)) + ","
 						+ '"' + publisherList.get(i) + '"' + ");";
-				myDBStm.executeUpdate(insertRecord);
+				try{
+					myDBStm.executeUpdate(insertRecord);
+				}
+				catch(SQLException e)
+				{
+					System.out.println("found a duplicate key in publisher: " + insertRecord);
+				}
 			}
 			
 //			connection.commit();

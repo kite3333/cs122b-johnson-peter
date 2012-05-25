@@ -130,7 +130,6 @@ else { //Add Search Query Terms
 query.append("GROUP BY m.id ORDER BY " + columnToSort + " " + sort + " LIMIT " + limit + " OFFSET " + offset + ";");
 ResultSet rs = statement.executeQuery(query.toString());
 %>
-
 <h1>Fabflix - Browse Results</h1>
 <h2>Results</h2>
 <form action="./checkout.jsp">
@@ -186,11 +185,13 @@ try{
 				}
 				actors += "<a href= \"./starPage.jsp?star=" + stars.substring(start, idBreak) + "\">" + stars.substring(idBreak + 1) + "</a>";
 			}
-			out.println("<tr><td><a href=\"./shoppingCart.jsp?" + id + "=1&title='" + title + "'\">Add to Cart</a></td>" +
-				"<td>" + id + "</td><td>" + title + "</td><td>" + year + "</td><td>" + director + "</td>" +
-				"<td>" + actors + "</td><td>" + genres + "</td><td><img src='" + bannerURL + "'/></td>" +
-				"<td>" + trailerURL + "</td></tr>");
-		
+				out.println("<tr><td><a href=\"./shoppingCart.jsp?" + id + "=1&title='" + title + "'\">Add to Cart</a></td>" +
+					"<td>" + id + "</td><td><div id=\"" + id + "\" onmouseover=\"moviePopUp(this.id)\" onmouseout=\"hide(this.id)\">"  + 
+					title + "</div><div id=\"popUpFor" + id + "\" class=\"moviePopUp\" style=\"display: none;\"><img src='" + 
+					bannerURL + "'/><br />ID: " + id + "<br />Year: " + year + "<br />Stars: " + actors + "</div></td><td>" + year + "</td><td>" + 
+					director + "</td><td>" + actors + "</td><td>" + genres + "</td><td><img src='" + bannerURL + "'/></td>" +
+					"<td><a href=\"" + trailerURL + "\">Trailer</a></td></tr>");
+
 		} while(rs.next());
 	}
 	else {
@@ -203,4 +204,13 @@ catch(NullPointerException e)
 }
  %>
 </TABLE>
+<br /><br /><br /><br />
+<script>
+function moviePopUp(id) {
+	document.getElementById("popUpFor" + id).setAttribute("style", "display: block;");
+}
+function hide(id) {
+	document.getElementById("popUpFor" + id).setAttribute("style", "display: none;");
+}
+</script>
 <% out.println(ServletUtilities.pageEnd()); %>

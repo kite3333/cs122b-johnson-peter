@@ -1,7 +1,7 @@
 body { 
 	background-color: #fdf5e6;
-	position: relative;	
 }
+
 a:hover { color: red }
 .title { 
   margin-left: auto; 
@@ -21,7 +21,9 @@ th { background-color: #ef8429;
 }
 td { font-size: 14px;
      font-family: Arial, Helvetica, sans-serif;
+     vertical-align: text-top;
 }
+
 legend {
   font-weight: bold;
   color: black;
@@ -54,6 +56,19 @@ h2 { color: #440000;
 	float: left;
 	z-index: 1;
 	background-color: #FFF;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.moviePopUp {
+	text-align: left;
+	vertical-align: text-top;
+	position: absolute;
+	left: 100px;
+	float: left;
+	z-index: 1;
+	background-color: white;
 	border-color: black;
 	border-style: solid;
 	border-width: 1px;

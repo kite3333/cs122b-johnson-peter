@@ -14,8 +14,8 @@ if (request.getParameter("login") != null && request.getParameter("login").equal
 }
 %>
 <FORM ACTION="./main.jsp" METHOD="POST">
-  Email: <INPUT TYPE="TEXT" NAME="email"><br />
-  Password: <INPUT TYPE="PASSWORD" NAME="password"><br />
+  Email: <INPUT TYPE="TEXT" NAME="email" value="lind@yahoo.com"><br />
+  Password: <INPUT TYPE="PASSWORD" NAME="password" value="pw17"><br />
   <INPUT TYPE="SUBMIT" VALUE="Login">
 </FORM>
 

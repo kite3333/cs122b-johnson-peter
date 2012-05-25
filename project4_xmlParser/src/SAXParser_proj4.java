@@ -1,20 +1,15 @@
-
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -32,6 +27,8 @@ public class SAXParser_proj4 extends DefaultHandler {
 
 	private String tempVal;
 	private StringBuilder insertRecord = new StringBuilder();
+	private StringBuilder inconsistencies = new StringBuilder();
+	private StringBuilder author_doc_record = new StringBuilder();
 
 	// to maintain context
 	private Book tempBook;
@@ -123,7 +120,7 @@ public class SAXParser_proj4 extends DefaultHandler {
 		insertRecord.append("booktitle_id, genre_id, publisher_id) VALUES");
 	}
 
-	public void runExample() {
+	public void runExample() throws IOException {
 		parseDocument();
 
 		try {
@@ -151,47 +148,63 @@ public class SAXParser_proj4 extends DefaultHandler {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", "");
 			Statement myDBStm = connection.createStatement();
+
+			BufferedWriter writer = new BufferedWriter(new FileWriter("test.sql"));
+			
+//			System.out.println(inconsistencies.toString());
 			insertRecord.replace(insertRecord.length() - 1, insertRecord.length(), ";");
-			System.out.println(insertRecord.substring(insertRecord.length() - 10));
+			writer.write("----Insert Record Query----");
+			writer.newLine();
+			writer.write(insertRecord.toString());
+			writer.newLine();
 			myDBStm.executeUpdate(insertRecord.toString());
-			
-			System.exit(-1);
-			
+			author_doc_record.replace(author_doc_record.length() - 1, author_doc_record.length(), ";");
+			writer.write("----Author-Doc Record Query----");
+			writer.newLine();
+			writer.write(author_doc_record.toString());
+			writer.newLine();
+			myDBStm.executeUpdate(author_doc_record.toString());
 			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(1, 'article'), (2, 'inproceedings')," + 
 					"(3, 'proceedings'), (4, 'book'), (5, 'incollection'), (6, 'phdthesis'), (7, 'mastersthesis'), (8, 'www');");
-
+			
 			//this is for all people editors and authors...
 			insertRecord = new StringBuilder();
-//			insertRecord.append(b);
-//			for (int i = 0; i < editorList.size(); i++) {
-//				insertRecord = "insert into tbl_people (id, name) values(" + 
-//						editorTable.get(editorList.get(i)) + "," + '"' + editorList.get(i) + '"' + ");";
-//				myDBStm.executeUpdate(insertRecord);
-//			}
-//
-//			for (int i = 0; i < booktitleTable.size(); i++) {
-//				insertRecord = "insert into tbl_booktitle (id, title) values(" + booktitleTable.get(booktitleList.get(i)) + ","
-//						+ '"' + booktitleList.get(i) + '"' + ");";
-//				try{
-//					myDBStm.executeUpdate(insertRecord);
-//				}
-//				catch(SQLException e)
-//				{
-//					System.out.println("found a duplicate key in insert: " + insertRecord);
-//				}
-//			}
-//
-//			for (int i = 0; i < publisherTable.size(); i++) {
-//				insertRecord = "insert into tbl_publisher (id, publisher_name) values(" + publisherTable.get(publisherList.get(i)) + ","
-//						+ '"' + publisherList.get(i) + '"' + ");";
-//				try{
-//					myDBStm.executeUpdate(insertRecord);
-//				}
-//				catch(SQLException e)
-//				{
-//					System.out.println("found a duplicate key in publisher: " + insertRecord);
-//				}
-//			}
+			String insertRecord = null;
+			for (int i = 0; i < editorList.size(); i++) {
+				insertRecord = "insert into tbl_people (id, name) values(" + 
+						editorTable.get(editorList.get(i)) + "," + '"' + editorList.get(i) + '"' + ");";
+				try {
+					myDBStm.executeUpdate(insertRecord);
+				}
+				catch (SQLException e) {
+					System.out.println("found a duplicate key in insert: " + insertRecord);
+				}
+			}
+			System.out.println("Finished editor list");
+			for (int i = 0; i < booktitleTable.size(); i++) {
+				insertRecord = "insert into tbl_booktitle (id, title) values(" + booktitleTable.get(booktitleList.get(i)) + ","
+						+ '"' + booktitleList.get(i) + '"' + ");";
+				try{
+					myDBStm.executeUpdate(insertRecord);
+				}
+				catch(SQLException e)
+				{
+					System.out.println("found a duplicate key in insert: " + insertRecord);
+				}
+			}
+			System.out.println("Finished book title list");
+
+			for (int i = 0; i < publisherTable.size(); i++) {
+				insertRecord = "insert into tbl_publisher (id, publisher_name) values(" + publisherTable.get(publisherList.get(i)) + ","
+						+ '"' + publisherList.get(i) + '"' + ");";
+				try{
+					myDBStm.executeUpdate(insertRecord);
+				}
+				catch(SQLException e)
+				{
+					System.out.println("found a duplicate key in publisher: " + insertRecord);
+				}
+			}
 			
 
 		} catch (SQLException e) {
@@ -233,8 +246,8 @@ public class SAXParser_proj4 extends DefaultHandler {
 			System.out.println("remove successful.");
 
 			// parse the file and also register this class for call backs
-//			sp.parse("big_dblp-data2.xml", this);
-			sp.parse("small_final-data2.xml", this);
+			sp.parse("big_dblp-data2.xml", this);
+//			sp.parse("small_final-data2.xml", this);
 
 		} catch (SAXException se) {
 			se.printStackTrace();
@@ -319,21 +332,18 @@ public class SAXParser_proj4 extends DefaultHandler {
 				title = title.replace("\"", "");
 			}
 			titleBool = false;
-			//System.out.println("title is " + title);
 		}
 		if (booktitleBool) {
 			booktitle = new String(ch, start, length);
 			booktitle = booktitle.trim();
 			booktitleBool = false;
 			booktitleList.add(booktitle);
-			//System.out.println("booktitle is " + booktitle);
 		}
 		if (publisherBool) {
 			publisher = new String(ch, start, length);
 			publisher = publisher.trim();
 			publisherList.add(publisher);
 			publisherBool = false;
-			//System.out.println("publisher is " + publisher);
 		}
 		if (pagesBool) {
 			int te = pages.indexOf("-")+1;
@@ -348,14 +358,11 @@ public class SAXParser_proj4 extends DefaultHandler {
 				}
 				catch(NumberFormatException e)
 				{
-					System.out.println("found an inconsistency with pages: " + pages);
+					inconsistencies.append("found an inconsistency with pages: " + pages + "\r\n");
 					startPage = 0; 
 					endPage = 0;
 				}
 				pagesBool = false;
-//				System.out.println("pages is " + pages);
-//				System.out.println("start page is " + startPage + " end page is "
-//						+ endPage);
 			}
 		}
 		if (yearBool) {
@@ -363,7 +370,6 @@ public class SAXParser_proj4 extends DefaultHandler {
 			yearString = yearString.trim();
 			year = Integer.parseInt(yearString);
 			yearBool = false;
-			//System.out.println("year is " + year);
 		}
 		if (volumeBool) {
 			String volumeString = new String(ch, start, length);
@@ -373,56 +379,47 @@ public class SAXParser_proj4 extends DefaultHandler {
 			}
 			catch(NumberFormatException e)
 			{
-				System.out.println("found an inconsistency in volume: " + volumeString);
+				inconsistencies.append("found an inconsistency in volume: " + volumeString + "\r\n");
 				volume = 0;
 			}
 			volumeBool = false;
-			//System.out.println("volume is " + volume);
 		}
 		if (numberBool) {
 			String numberString = new String(ch, start, length);
 			numberString = numberString.trim();
 			number = Integer.parseInt(numberString);
 			numberBool = false;
-			//System.out.println("number is " + number);
 		}
 		if (urlBool) {
 			url = new String(ch, start, length);
 			url = url.trim();
 			urlBool = false;
-			//System.out.println("url is " + url);
 		}
 		if (eeBool) {
 			ee = new String(ch, start, length);
 			ee = ee.trim();
 			eeBool = false;
-			//System.out.println("ee is " + ee);
 		}
 		if (cdromBool) {
 			cdrom = new String(ch, start, length);
 			cdrom = cdrom.trim();
 			cdromBool = false;
-			//System.out.println("cdrom is " + cdrom);
 		}
 		if (citeBool) {
 			cite = new String(ch, start, length);
 			cite = cite.trim();
 			citeBool = false;
-			//System.out.println("cite is " + cite);
 		}
 		if (crossrefBool) {
 			crossref = new String(ch, start, length);
 			crossref = crossref.trim();
 			crossrefBool = false;
-			//System.out.println("crossref is " + crossref);
 		}
 		if (isbnBool) {
 			isbn = new String(ch, start, length);
 			isbn = isbn.trim();
 			isbnBool = false;
-			//System.out.println("isbn is " + isbn);
 		}
-		//System.out.println("series is " + series);
 		if (authorBool) {
 			String authorTest = new String(ch, start, length);
 			authorTest = authorTest.trim();
@@ -440,7 +437,6 @@ public class SAXParser_proj4 extends DefaultHandler {
 
 		tempVal = new String(ch, start, length);
 
-		// System.out.println("temp val is " + tempVal);
 	}
 
 	public void endElement(String uri, String localName, String qName)
@@ -518,53 +514,34 @@ public class SAXParser_proj4 extends DefaultHandler {
 				genreID = 8;
 			}				
 						
-			insertRecord.append("(" + 
-					'"' + dblpID + '"' + "," + 
-					'"' + title + '"' + "," + 
-					'"' + startPage + '"' + "," +
-					'"' + endPage + '"' + "," + 
-					'"' + year + '"' + "," + 
-					'"' + volume + '"' + "," + 
-					'"' + number + '"' + "," + 
-					'"' + url + '"' + "," + 
-					'"' + ee + '"' + "," + 
-					'"' + cdrom + '"' + "," + 
-					'"' + cite + '"' + "," + 
-					'"' + crossref + '"' + "," + 
-					'"' + isbn + '"' + "," +
-					'"' + series + '"' + "," + 
-					editorTable.get(editor) + "," +
-					booktitleTable.get(booktitle) + "," +
-					genreID + "," +
-					publisherTable.get(publisher) + "),");
+			insertRecord.append("(\"" + dblpID + "\",\"" + title + "\",\"" + startPage + "\",\"");
+			insertRecord.append(endPage + "\",\"" + year + "\",\"" + volume + "\",\"" + number + "\",\"");
+			insertRecord.append(url + "\",\"" + ee + "\",\"" + cdrom + "\",\"" + cite + "\",\"" + crossref + "\",\""); 
+			insertRecord.append(isbn + "\",\"" + series + "\"," + editorTable.get(editor) + "," + booktitleTable.get(booktitle) + ",");
+			insertRecord.append(genreID + "," + publisherTable.get(publisher) + "),");
 			
 			dblpID++;
-			
-			//System.out.println(insertRecord);
 			editorID++;
 			booktitleID++;
 			publisherID++;
-//				authorID++;
-			//	connection.setAutoCommit(false);
-//				psInsertRecord = connection.prepareStatement(insertRecord);
-//				for(int i = 0; i < multipleAuthorsList.size(); i++)
-//				{
-//					String author_doc_record = "insert into tbl_author_document_mapping (id, doc_id, author_id) values (null," + dblpID + "," + multipleAuthorsList.get(i) + ");";		
-//					myDBStm.executeUpdate(author_doc_record);
-//				}
+			authorID++;
+			for(int i = 0; i < multipleAuthorsList.size(); i++)
+			{
+				if (author_doc_record.length() == 0) {
+				author_doc_record.append("insert into tbl_author_document_mapping (id, doc_id, author_id) values");
+				}
+				author_doc_record.append("(null," + dblpID + "," + multipleAuthorsList.get(i) + "),");		
+			}
 			multipleAuthorsList.clear();
 		}
-
 	}
 
-	public static void main(String[] args) {
-		 long startTime = System.currentTimeMillis();
+	public static void main(String[] args) throws IOException {
+		long startTime = System.currentTimeMillis();
 		SAXParser_proj4 spe = new SAXParser_proj4();
 		spe.runExample();
-		  long endTime = System.currentTimeMillis();
-		  System.out.println("Total elapsed time in execution of method callMethod() is :"+ (endTime-startTime));
-		  
-		  
+		long endTime = System.currentTimeMillis();
+		System.out.println("Total elapsed time: less than "+ ((endTime-startTime) / 60000 + 1) + " minutes."); 
 	}
 
 }

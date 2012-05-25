@@ -73,11 +73,7 @@ public class SAXParserExample extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		tempVal = "";
-		if(qName.equalsIgnoreCase("Employee")) {
-			//create a new instance of employee
-			tempEmp = new Employee();
-			tempEmp.setType(attributes.getValue("type"));
-		}
+
 	}
 	
 
@@ -103,8 +99,11 @@ public class SAXParserExample extends DefaultHandler{
 	}
 	
 	public static void main(String[] args){
+		 long startTime = System.currentTimeMillis();
 		SAXParserExample spe = new SAXParserExample();
 		spe.runExample();
+		  long endTime = System.currentTimeMillis();
+		  System.out.println("Total elapsed time in execution of method callMethod() is :"+ (endTime-startTime));
 	}
 	
 }

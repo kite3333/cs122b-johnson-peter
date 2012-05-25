@@ -3,7 +3,7 @@
 <dblp>
 <book mdate="2004-03-08" key="books/acm/Kim95">
 <editor>
-Won Kim
+Theo D'Hondt
 </editor>
 <title>
 Net Theory and Applications, Proceedings of the Advanced Course on General
@@ -47,7 +47,7 @@ db/books/collections/Stonebraker86.html
 </book>
 <book mdate="2005-03-04" key="books/crc/IIR05">
 <editor>
-Richard Zurawski
+Michael Stonebraker
 </editor>
 <title>
 The Industrial Information Technology Handbook
@@ -1476,7 +1476,7 @@ Amelia Carlson
 Daniel H. Fishman
 </author>
 <author>
-Michael L. Heytens
+William Kent
 </author>
 <author>
 William Kent
@@ -6389,7 +6389,7 @@ AIFIPP
 IFIP Transactions
 </series>
 <volume>
-A-27
+27
 </volume>
 <publisher>
 North-Holland
@@ -6699,7 +6699,7 @@ Advanced Information Processing Techniques for LAN and MAN Management
 IFIP Transactions
 </series>
 <volume>
-C-17
+17
 </volume>
 <publisher>
 North-Holland
@@ -7576,7 +7576,7 @@ Applications in Parallel and Distributed Computing
 IFIP Transactions
 </series>
 <volume>
-A-44
+44
 </volume>
 <publisher>
 North-Holland

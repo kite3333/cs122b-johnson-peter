@@ -145,54 +145,19 @@ public class SAXParser_proj4 extends DefaultHandler {
 
 			// Incorporate mySQL driver
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-
-			// Connect to MySQL as root
-			 connection = DriverManager.getConnection(
-					"jdbc:mysql://", "root", "");
-			 connection.setAutoCommit(false);
-			// Create and execute an SQL statement to get all the database names
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", "");
+			connection.setAutoCommit(false);
 			Statement myDBStm = connection.createStatement();
-			ResultSet resultDB = myDBStm.executeQuery("use moviedb");
 			String insertRecord = "";
 			
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(1, 'article');");
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(2, 'inproceedings');");
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(3, 'proceedings');");
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(4, 'book');");
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(5, 'incollection');");
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(6, 'phdthesis');");
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(7, 'mastersthesis');");
-			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(8, 'www');");
-			
-			
-//			for(int i = 0; i < dblp_queries.size(); i++)
-//			{
-//				myDBStm.executeUpdate(dblp_queries.get(i).toString());
-//			}
-//			
-//			for(int i = 0; i < mapping_queries.size(); i++)
-//			{
-//				myDBStm.executeUpdate(mapping_queries.get(i).toString());
-//			}
-			
-			
-//			psInsertRecord.executeBatch();
-//			author_mapping_PsInsertRecord.executeBatch();
-
-			
-//			for (int i = 0; i < authorList.size(); i++) {
-//				insertRecord = "insert into tbl_people (id, name) values(" + authorTable.get(authorList.get(i)) + "," + 
-//						+ '"' + authorList.get(i) + '"' + ");";
-//				myDBStm.executeUpdate(insertRecord);
-//				System.out.println(insertRecord);
-//			}
+			myDBStm.executeUpdate("insert into tbl_genres (id, genre_name) values(1, 'article'), (2, 'inproceedings')," + 
+					"(3, 'proceedings'), (4, 'book'), (5, 'incollection'), (6, 'phdthesis'), (7, 'mastersthesis'), (8, 'www');");
 
 			//this is for all people editors and authors...
 			for (int i = 0; i < editorList.size(); i++) {
 				insertRecord = "insert into tbl_people (id, name) values(" + 
 						editorTable.get(editorList.get(i)) + "," + '"' + editorList.get(i) + '"' + ");";
 				myDBStm.executeUpdate(insertRecord);
-				//System.out.println(insertRecord);
 			}
 
 			for (int i = 0; i < booktitleList.size(); i++) {
@@ -205,7 +170,6 @@ public class SAXParser_proj4 extends DefaultHandler {
 				{
 					System.out.println("found a duplicate key in insert: " + insertRecord);
 				}
-				//System.out.println(insertRecord);
 			}
 
 			for (int i = 0; i < publisherList.size(); i++) {
@@ -218,10 +182,7 @@ public class SAXParser_proj4 extends DefaultHandler {
 				{
 					System.out.println("found a duplicate key in publisher: " + insertRecord);
 				}
-			}
-			
-//			connection.commit();
-			
+			}			
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -247,11 +208,11 @@ public class SAXParser_proj4 extends DefaultHandler {
 			// get a new instance of parser
 			SAXParser sp = spf.newSAXParser();
 
-//			String source = "small_final-data.xml";
-//			String result = "small_final-data2.xml";
+			String source = "small_final-data.xml";
+			String result = "small_final-data2.xml";
 
-			String source = "big_dblp-data.xml";
-			String result = "big_dblp-data2.xml";
+//			String source = "big_dblp-data.xml";
+//			String result = "big_dblp-data2.xml";
 			
 			System.out.println("removing lines...");
 			Scanner s = new Scanner(new File(source));
@@ -259,10 +220,10 @@ public class SAXParser_proj4 extends DefaultHandler {
 			while (s.hasNext())
 				w.write(s.nextLine() + " ");
 			w.close();
-			System.out.println("remove successfull.");
+			System.out.println("remove successful.");
 
 			// parse the file and also register this class for call backs
-			sp.parse("big_dblp-data2.xml", this);
+//			sp.parse("big_dblp-data2.xml", this);
 			sp.parse("small_final-data2.xml", this);
 
 		} catch (SAXException se) {
@@ -476,17 +437,9 @@ public class SAXParser_proj4 extends DefaultHandler {
 			throws SAXException {
 
 		try {
-
-			// Incorporate mySQL driver
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-
-			// Connect to MySQL as root
 			Connection connection = DriverManager.getConnection(
-					"jdbc:mysql://", "root", "");
-
-			// Create and execute an SQL statement to get all the database names
+					"jdbc:mysql://localhost:3306/moviedb", "root", "");
 			Statement myDBStm = connection.createStatement();
-			ResultSet resultDB = myDBStm.executeQuery("use moviedb");
 			String insertRecord = "";
 
 			if(qName.equalsIgnoreCase("editor"))
@@ -497,7 +450,6 @@ public class SAXParser_proj4 extends DefaultHandler {
 					//System.out.println("we put in editor " + editor + editorID);
 				}
 			}
-			
 			else if (qName.equalsIgnoreCase("author")) {
 				int test = generator.nextInt();
 				if(!editorTable.containsValue(author))
@@ -515,7 +467,8 @@ public class SAXParser_proj4 extends DefaultHandler {
 					//System.out.println("we put in booktitle " + booktitle + booktitleID);
 				}
 
-			} else if (qName.equalsIgnoreCase("publisher")) {
+			} 
+			else if (qName.equalsIgnoreCase("publisher")) {
 				if(!publisherTable.containsValue(publisher))
 				{
 					publisherTable.put(publisher, publisherID);
@@ -560,9 +513,7 @@ public class SAXParser_proj4 extends DefaultHandler {
 				{
 					genreID = 8;
 				}				
-				
-
-				
+							
 				insertRecord = "insert into tbl_dblp_document (id, title, start_page, end_page, year, " +
 						"volume, number, url, ee, cdrom, cite, crossref, isbn, series, editor_id, " +
 						"booktitle_id, genre_id, publisher_id) values(" + 
@@ -628,15 +579,6 @@ public class SAXParser_proj4 extends DefaultHandler {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.println("something is inconsistent when parsing document end tag: " + e.getErrorCode());
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 	}

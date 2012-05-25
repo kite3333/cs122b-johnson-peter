@@ -67,15 +67,12 @@ public class SAXParserExample extends DefaultHandler{
 			System.out.println(it.next().toString());
 		}
 	}
-	
 
 	//Event Handlers
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		tempVal = "";
-
 	}
-	
 
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		tempVal = new String(ch,start,length);

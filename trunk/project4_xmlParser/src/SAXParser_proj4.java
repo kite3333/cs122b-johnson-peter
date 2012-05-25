@@ -169,7 +169,7 @@ public class SAXParser_proj4 extends DefaultHandler {
 //				myDBStm.executeUpdate(insertRecord);
 //			}
 //
-//			for (int i = 0; i < booktitleList.size(); i++) {
+//			for (int i = 0; i < booktitleTable.size(); i++) {
 //				insertRecord = "insert into tbl_booktitle (id, title) values(" + booktitleTable.get(booktitleList.get(i)) + ","
 //						+ '"' + booktitleList.get(i) + '"' + ");";
 //				try{
@@ -181,7 +181,7 @@ public class SAXParser_proj4 extends DefaultHandler {
 //				}
 //			}
 //
-//			for (int i = 0; i < publisherList.size(); i++) {
+//			for (int i = 0; i < publisherTable.size(); i++) {
 //				insertRecord = "insert into tbl_publisher (id, publisher_name) values(" + publisherTable.get(publisherList.get(i)) + ","
 //						+ '"' + publisherList.get(i) + '"' + ");";
 //				try{

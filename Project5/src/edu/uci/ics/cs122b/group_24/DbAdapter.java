@@ -16,17 +16,17 @@ public class DbAdapter extends SQLiteOpenHelper{
 
 	private static final String DATABASE_NAME = "moviedb";
 	private static final int DATABASE_VERSION = 1;
-	private static final String MOVIES_NAME = "movies";
-	private static final String STARS_NAME = "stars";
-	private static final String STARS_IN_MOVIES_NAME = "stars_in_movies";
-	private static final String COLUMN_ID = "id";
-	private static final String COLUMN_MOVIE_ID = "movie_id";
-	private static final String COLUMN_STAR_ID = "star_id";
-	private static final String COLUMN_DIRECTOR = "director";
-	private static final String COLUMN_TITLE = "title";
-	private static final String COLUMN_YEAR = "year";
-	private static final String COLUMN_FIRST_NAME = "first_name";
-	private static final String COLUMN_LAST_NAME = "last_name";
+	public static final String MOVIES_NAME = "movies";
+	public static final String STARS_NAME = "stars";
+	public static final String STARS_IN_MOVIES_NAME = "stars_in_movies";
+	public static final String COLUMN_ID = "id";
+	public static final String COLUMN_MOVIE_ID = "movie_id";
+	public static final String COLUMN_STAR_ID = "star_id";
+	public static final String COLUMN_DIRECTOR = "director";
+	public static final String COLUMN_TITLE = "title";
+	public static final String COLUMN_YEAR = "year";
+	public static final String COLUMN_FIRST_NAME = "first_name";
+	public static final String COLUMN_LAST_NAME = "last_name";
 	private SQLiteDatabase mDb;
 	private Context mContext;
 	private static final String TAG = "DBAdapter";

@@ -19,14 +19,22 @@ public class DbAdapter extends SQLiteOpenHelper{
 	public static final String MOVIES_NAME = "movies";
 	public static final String STARS_NAME = "stars";
 	public static final String STARS_IN_MOVIES_NAME = "stars_in_movies";
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_MOVIE_ID = "movie_id";
 	public static final String COLUMN_STAR_ID = "star_id";
-	public static final String COLUMN_DIRECTOR = "director";
+	public static final int COLUMN_NUM_STAR_ID = 0;
+	public static final String COLUMN_MOVIE_ID = "movie_id";
+	public static final int COLUMN_NUM_MOVIE_ID = 1;
+	public static final String COLUMN_ID = "id";
+	public static final int COLUMN_NUM_ID = 0;
 	public static final String COLUMN_TITLE = "title";
+	public static final int COLUMN_NUM_TITLE = 1;
 	public static final String COLUMN_YEAR = "year";
+	public static final int COLUMN_NUM_YEAR = 2;
+	public static final String COLUMN_DIRECTOR = "director";
+	public static final int COLUMN_NUM_DIRECTOR = 3;
 	public static final String COLUMN_FIRST_NAME = "first_name";
+	public static final int COLUMN_NUM_FIRST_NAME = 1;
 	public static final String COLUMN_LAST_NAME = "last_name";
+	public static final int COLUMN_NUM_LAST_NAME = 2;
 	private SQLiteDatabase mDb;
 	private Context mContext;
 	private static final String TAG = "DBAdapter";
@@ -99,6 +107,9 @@ public class DbAdapter extends SQLiteOpenHelper{
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS " + STARS_IN_MOVIES_NAME + ", " + STARS_NAME + ", " + MOVIES_NAME + ";");
 		onCreate(db);	
+	}
+	public Cursor getQ1Data() {
+		return mDb.query(MOVIES_NAME, null, null, null, null, null, null);
 	}
 	
 //	public Cursor fetchAll() {

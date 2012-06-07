@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, QuizActivity!</string>
-    <string name="app_name">Project 5</string>
+    <string name="hello">Welcome to our quiz app. You get 3 minutes to answer as many questions about movies and stars. Press Start to begin. Press Stats to see how you\'ve done.</string>
+    <string name="app_name">Project 5: Movies Quiz</string>
+    <string name="start">Start</string>
+    <string name="stats">Stats</string>
+    <string name="questionFieldDefault">Question Display</string>
+    <string name="timeFieldDefault">Time Display</string>
 
 </resources>

@@ -59,7 +59,6 @@ public class QuestionActivity extends Activity {
 			public void onClick(View v) {
 				// Change the button image
 				if (answerField.getCheckedRadioButtonId() == correctRadioID) {
-					questionView.setText("You're Correct!");
 					getNextQuestion();
 				}
 			}

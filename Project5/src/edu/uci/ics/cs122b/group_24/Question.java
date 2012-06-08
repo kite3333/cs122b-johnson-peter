@@ -227,10 +227,6 @@ public class Question {
 						gotMovie = true;
 					}
 				}
-//				question = "Good";
-//				for (int i = 0; i < 4; i++) {
-//					choices[i] = "Works";
-//				}
 				totalCount = cursor2.getCount();
 				usedIDs = new HashSet<Integer>();
 				usedIDs.add(answerIDs[0]);

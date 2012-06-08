@@ -41,7 +41,7 @@ public class Question {
 	}
 	
 	public void generateQuestion() {
-		int choice = 0; //getRandInt(3.0);
+		int choice = getRandInt(5.0);
 		choices = new String[4];
 		Cursor cursor = null;
 		int correctRowNum = -1;
@@ -160,40 +160,51 @@ public class Question {
 				// Randomly choose a movie of interest
 				cursor.moveToPosition(getRandInt((double) totalCount));
 				movieID = cursor.getInt(DbAdapter.COLUMN_NUM_ID);
-				question = "Which actor was NOT starred in the movie, \"" + cursor.getString(DbAdapter.COLUMN_NUM_TITLE) + "\"?";
-				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_MOVIE_ID + "= '" + movieID + "'");
+				question = "Which actor did NOT star in the movie, " + cursor.getString(DbAdapter.COLUMN_NUM_TITLE) + "?";
+				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_MOVIE_ID + " != '" + movieID + "'");
 				totalCount = cursor.getCount();
 				// Choose the correct answer's ID and add to starIDs
 				cursor.moveToPosition(getRandInt((double) totalCount));
 				answerIDs = new int[4];
+				usedIDs = new HashSet<Integer>();
 				answerIDs[0] = cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
-				// Add all the stars of this movie to a list for checking later
-				cursor.moveToFirst();
-				usedIDs = new HashSet<Integer>(); 
-				while (!cursor.isAfterLast()) {
-					usedIDs.add(cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID));
-					cursor.moveToNext();
-				}
-				// Get a list of all entries minus the ones with the movie_id of the movie in question.
-				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_NUM_MOVIE_ID + "!= '" + movieID + "'");
+				// Add the wrong answers (those that did star in the movie)
+				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_MOVIE_ID + " = '" + movieID + "'");
 				totalCount = cursor.getCount();
-				// Choose 3 incorrect answers from the list
-				for (int i = 1; i <= 3; i++) {
-					cursor.moveToPosition(getRandInt((double) totalCount));
-					answerIDs[i] = cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
-					if (!usedIDs.add(answerIDs[i])) { // By adding the id, duplicates as well as correct ids will be checked for.
-						i--;
+				// If there are more than 3 stars in the movie of interest, choose 3 at random
+				if (totalCount > 3) {
+					for (int i = 1; i <= 3; i++) {
+						cursor.moveToPosition(getRandInt((double) totalCount));
+						answerIDs[i] = cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
+						if (!usedIDs.add(answerIDs[i])) { // By adding the id, duplicates as well as correct ids will be checked for
+							i--;
+						}
 					}
 				}
-				// Get the names of the stars that were NOT chosen
-				for (int i = 0; i <= 3; i++) {
-					cursor = db.query(DbAdapter.STARS_NAME, DbAdapter.COLUMN_ID + "!= '" + answerIDs[i] + "'");
+				else { // Otherwise add all of the stars from the movie and add id = 0 to make up for movies with less than 3 stars
 					cursor.moveToFirst();
-					if (cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME) != null) {
-						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME) + " " + cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME);
+					for (int i = 1; i <= totalCount; i++) {
+						answerIDs[i] = cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
+						cursor.moveToNext();
+					}
+					for (int i = totalCount + 1; i <= 3; i++) {
+						answerIDs[i] = 0;
+					}
+				}
+				// Get the names of the stars
+				for (int i = 0; i <= 3; i++) {
+					if (answerIDs[i] != 0) {
+						cursor = db.query(DbAdapter.STARS_NAME, DbAdapter.COLUMN_ID + " = '" + answerIDs[i] + "'");
+						cursor.moveToFirst();
+						if (!cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME).equals("none")) {
+							choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME) + " " + cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME);
+						}
+						else {
+							choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME);
+						}
 					}
 					else {
-						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME);
+						choices[i] = "N/A";
 					}
 				}
 				correctAnswer = choices[0];
@@ -205,114 +216,113 @@ public class Question {
 				cursor = db.getTable(DbAdapter.MOVIES_NAME);
 				totalCount = cursor.getCount();
 				answerIDs = new int[4];
+				choices = new String[4];
 				boolean gotMovie = false;
 				// Randomly choose a movie of interest
 				while (!gotMovie) {
 					cursor.moveToPosition(getRandInt((double) totalCount));
 					answerIDs[0] = cursor.getInt(DbAdapter.COLUMN_NUM_ID);
-					cursor2 = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_MOVIE_ID + " = '" + movieID + "'");
+					cursor2 = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_MOVIE_ID + " = '" + answerIDs[0] + "'");
 					if (cursor2.getCount() > 1) { // Chosen movie has at least 2 stars or get another one
 						gotMovie = true;
 					}
 				}
+//				question = "Good";
+//				for (int i = 0; i < 4; i++) {
+//					choices[i] = "Works";
+//				}
+				totalCount = cursor2.getCount();
+				usedIDs = new HashSet<Integer>();
+				usedIDs.add(answerIDs[0]);
 				// Pick the two stars
-				cursor2.moveToPosition(getRandInt((double) cursor2.getCount()));
-				int starID1 = cursor2.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
-				int starID2 = 0;
+				cursor2.moveToPosition(getRandInt((double) totalCount));
+				int[] starIDs = new int[2];
+				String[] starNames = new String[2];
+				starIDs[0] = cursor2.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
+				starIDs[1] = 0;
 				do {
-					cursor2.moveToPosition(getRandInt((double) cursor2.getCount()));
-					starID2 = cursor2.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
-				} while (starID1 == starID2);
-				// Pick 3 mo
-				cursor2 = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_STAR_ID + " != '" + starID1 + "' || " + 
-						DbAdapter.COLUMN_STAR_ID + " != '" + starID2 + "'");
-//				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_MOVIE_ID + "= '" + star_movieID3 + "'");
-//				totalCount = cursor.getCount();
-//				Log.d("HELP", "" + totalCount);
-//				// Choose the correct answer's ID and add to starIDs
-//				cursor.moveToPosition(getRandInt((double) totalCount));
-//				int[] starIDs3 = new int[4];
-//				starIDs3[0] = cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
-//				
-//				// Add all the stars of this movie to a list for checking later
-//				cursor.moveToFirst();
-//				HashSet<Integer> usedIDs3 = new HashSet<Integer>(); 
-//				while (!cursor.isAfterLast()) {
-//					usedIDs3.add(cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID));
-//					cursor.moveToNext();
-//				}
-//				// Get a list of all entries minus the ones with the movie_id of the movie in question.
-//				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_NUM_MOVIE_ID + "!= '" + star_movieID3 + "'");
-//				totalCount = cursor.getCount();
-//				// Choose 3 incorrect answers from the list
-//				for (int i = 1; i <= 3; i++) {
-//					cursor.moveToPosition(getRandInt((double) totalCount));
-//					starIDs3[i] = cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
-//					if (!usedIDs3.add(starIDs3[i])) { // By adding the id, duplicates as well as correct ids will be checked for.
-//						i--;
-//					}
-//				}
-//
-//				// query here...
-//				for (int i = 0; i <= 3; i++) {
-//					cursor = db.query(DbAdapter.STARS_NAME, DbAdapter.COLUMN_ID + "= '" + starIDs3[i] + "'");
-//					cursor.moveToFirst();
-//					if (cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME) != null) {
-//						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME) + " " + cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME);
-//					}
-//					else {
-//						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME);
-//					}
-//				}
-//				correctAnswer = choices[0];
-				
+					cursor2.moveToPosition(getRandInt((double) totalCount));
+					starIDs[1] = cursor2.getInt(DbAdapter.COLUMN_NUM_STAR_ID);
+				} while (starIDs[0] == starIDs[1]);
+				// Get the names of the two stars
+				for (int i = 0; i <= 1; i++) {
+					cursor = db.query(DbAdapter.STARS_NAME, DbAdapter.COLUMN_ID + " = '" + starIDs[i] + "'");
+					cursor.moveToFirst();
+					starNames[i] = cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME).replaceAll("\"", "");
+					if (starNames[i] != null && !starNames[i].equals("none")) {
+						starNames[i] += " " + cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME).replaceAll("\"", "");
+					}
+					else {
+						starNames[i] = cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME).replaceAll("\"", "");
+					}
+				}
+				question = "In which movie did " + starNames[0] + " and " + starNames[1] + " appear in together?";
+				// Pick 3 wrong answers
+				// Get 3 movies where neither star has performed
+				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_STAR_ID + " != '" + starIDs[0] + "' || " + 
+						DbAdapter.COLUMN_STAR_ID + " != '" + starIDs[1] + "'");
+				totalCount = cursor.getCount();
+				for (int i = 1; i <= 3; i++) {
+					cursor.moveToPosition(getRandInt((double) totalCount));
+					answerIDs[i] = cursor.getInt(DbAdapter.COLUMN_NUM_MOVIE_ID);
+					if (!usedIDs.add(answerIDs[i])) {
+						i--;
+					}
+				}
+				// Get names for movies
+				for (int i = 0; i <= 3; i++) {
+					cursor = db.query(DbAdapter.MOVIES_NAME, DbAdapter.COLUMN_ID + "= '" + answerIDs[i] + "'");
+					cursor.moveToFirst();
+					choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_TITLE);
+				}
+				correctAnswer = choices[0];
 				break;
 				
 ///////////// CASE 5 ///////////////
 			case 5: // Who directed the movie X?
-				cursor = db.getTable(DbAdapter.MOVIES_NAME);
-				totalCount = cursor.getCount();
-				// Randomly choose a movie of interest
-				cursor.moveToPosition(getRandInt((double) totalCount));
-				int movieID100 = cursor.getInt(DbAdapter.COLUMN_NUM_ID);
-				question = "Who directed the movie, \"" + cursor.getString(DbAdapter.COLUMN_NUM_TITLE) + "\"?";
-				cursor = db.query(DbAdapter.MOVIES_NAME, DbAdapter.COLUMN_ID + "= '" + movieID100 + "'");
-				totalCount = cursor.getCount();
-				// Choose the correct answer's ID and add to DIRECTOR
-				cursor.moveToPosition(getRandInt((double) totalCount));
-				int[] starIDs100 = new int[4];
-				starIDs100[0] = cursor.getInt(DbAdapter.COLUMN_NUM_DIRECTOR);
-				// Add all the stars of this movie to a list for checking later
-				cursor.moveToFirst();
-				HashSet<Integer> usedIDs100 = new HashSet<Integer>(); 
-				while (!cursor.isAfterLast()) {
-					usedIDs100.add(cursor.getInt(DbAdapter.COLUMN_NUM_DIRECTOR));
-					cursor.moveToNext();
-				}
-				// Get a list of all entries minus the ones with the movie_id of the movie in question.
-				cursor = db.query(DbAdapter.MOVIES_NAME, DbAdapter.COLUMN_ID + "!= '" + movieID100 + "'");
-				totalCount = cursor.getCount();
-				// Choose 3 incorrect answers from the list
-				for (int i = 1; i <= 3; i++) {
-					cursor.moveToPosition(getRandInt((double) totalCount));
-					starIDs100[i] = cursor.getInt(DbAdapter.COLUMN_NUM_DIRECTOR);
-					if (!usedIDs100.add(starIDs100[i])) { // By adding the id, duplicates as well as correct ids will be checked for.
-						i--;
-					}
-				}
-
-				// Get the names of the stars that were NOT chosen
-				for (int i = 0; i <= 3; i++) {
-					cursor = db.query(DbAdapter.MOVIES_NAME, DbAdapter.COLUMN_ID + "!= '" + starIDs100[i] + "'");
-					cursor.moveToFirst();
-					if (cursor.getString(DbAdapter.COLUMN_NUM_DIRECTOR) != null) {
-						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_DIRECTOR);
-					}
-					else {
-						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_DIRECTOR);
-					}
-				}
-				correctAnswer = choices[0];
+//				cursor = db.getTable(DbAdapter.MOVIES_NAME);
+//				totalCount = cursor.getCount();
+//				// Randomly choose a movie of interest
+//				cursor.moveToPosition(getRandInt((double) totalCount));
+//				int movieID100 = cursor.getInt(DbAdapter.COLUMN_NUM_ID);
+//				question = "Who directed the movie, \"" + cursor.getString(DbAdapter.COLUMN_NUM_TITLE) + "\"?";
+//				cursor = db.query(DbAdapter.MOVIES_NAME, DbAdapter.COLUMN_ID + "= '" + movieID100 + "'");
+//				totalCount = cursor.getCount();
+//				// Choose the correct answer's ID and add to DIRECTOR
+//				cursor.moveToPosition(getRandInt((double) totalCount));
+//				int[] starIDs100 = new int[4];
+//				starIDs100[0] = cursor.getInt(DbAdapter.COLUMN_NUM_DIRECTOR);
+//				// Add all the stars of this movie to a list for checking later
+//				cursor.moveToFirst();
+//				HashSet<Integer> usedIDs100 = new HashSet<Integer>(); 
+//				while (!cursor.isAfterLast()) {
+//					usedIDs100.add(cursor.getInt(DbAdapter.COLUMN_NUM_DIRECTOR));
+//					cursor.moveToNext();
+//				}
+//				// Get a list of all entries minus the ones with the movie_id of the movie in question.
+//				cursor = db.query(DbAdapter.MOVIES_NAME, DbAdapter.COLUMN_ID + "!= '" + movieID100 + "'");
+//				totalCount = cursor.getCount();
+//				// Choose 3 incorrect answers from the list
+//				for (int i = 1; i <= 3; i++) {
+//					cursor.moveToPosition(getRandInt((double) totalCount));
+//					starIDs100[i] = cursor.getInt(DbAdapter.COLUMN_NUM_DIRECTOR);
+//					if (!usedIDs100.add(starIDs100[i])) { // By adding the id, duplicates as well as correct ids will be checked for.
+//						i--;
+//					}
+//				}
+//
+//				// Get the names of the stars that were NOT chosen
+//				for (int i = 0; i <= 3; i++) {
+//					cursor = db.query(DbAdapter.MOVIES_NAME, DbAdapter.COLUMN_ID + "!= '" + starIDs100[i] + "'");
+//					cursor.moveToFirst();
+//					if (cursor.getString(DbAdapter.COLUMN_NUM_DIRECTOR) != null) {
+//						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_DIRECTOR);
+//					}
+//					else {
+//						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_DIRECTOR);
+//					}
+//				}
+//				correctAnswer = choices[0];
 				
 				
 				break;

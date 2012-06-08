@@ -27,7 +27,7 @@ public class QuestionActivity extends Activity {
 	private CountDownTimer timer;
 	private Question question;
 	
-	private static final int THREE_MINUTES = 18000;
+	private static final int THREE_MINUTES = 180000;
 	private static final int ONE_SECOND = 1000;
 	
 	int count = 0;
@@ -54,8 +54,6 @@ public class QuestionActivity extends Activity {
         		public void onFinish() {
         			Intent intentStats = new Intent(QuestionActivity.this, StatsActivity.class);
         			startActivity(intentStats);
-//        	        setContentView(R.layout.stats);
-//        			timeView.setText("DONE");
         		}
         	}.start();
         
@@ -73,14 +71,18 @@ public class QuestionActivity extends Activity {
 				}
 				else if(answerField.getCheckedRadioButtonId() != correctRadioID)
 				{
+					getNextQuestion();
 					Stats.numberIncorrect++;
+					Stats.quizTime = count;
+					Stats.averageTime = (Stats.averageTime + count) / 2;
+					count = 0;
 				}
-				Stats.numberOfQuizzes++;
 			}
         });
+		Stats.numberOfQuizzes++;
     }
     
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -130,7 +132,6 @@ public class QuestionActivity extends Activity {
       int currentTime = savedInstanceState.getInt("currentTime");
       String currentQuestion = savedInstanceState.getString("currentQuestion");
     }
-    
     private void getNextQuestion() {
     	question.generateQuestion();
         Vector<Integer> choices = new Vector<Integer>();
@@ -140,25 +141,25 @@ public class QuestionActivity extends Activity {
         choices.add(2);
         choices.add(3);
         choice = choices.remove(Question.getRandInt((double) choices.size()));
-        radio0.setText(question.getAnswer(choice) + choice);
+        radio0.setText(question.getAnswer(choice));
         if (choice == 0) {
         	correctRadioID = radio0.getId();
         }
         choice = choices.remove(Question.getRandInt((double) choices.size()));
-        radio1.setText(question.getAnswer(choice) + choice);
+        radio1.setText(question.getAnswer(choice));
         if (choice == 0) {
         	correctRadioID = radio1.getId();
         }
         choice = choices.remove(Question.getRandInt((double) choices.size()));
-        radio2.setText(question.getAnswer(choice) + choice);
+        radio2.setText(question.getAnswer(choice));
         if (choice == 0) {
         	correctRadioID = radio2.getId();
         }
         choice = choices.remove(0);
-        radio3.setText(question.getAnswer(choice) + choice);
+        radio3.setText(question.getAnswer(choice));
         if (choice == 0) {
         	correctRadioID = radio3.getId();
         }
-        questionView.setText(question.getQuestion() + question.getCorrectAnswer());
+        questionView.setText(question.getQuestion());
     }
 }

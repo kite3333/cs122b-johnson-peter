@@ -26,6 +26,8 @@ public class QuestionActivity extends Activity {
 	private int correctRadioID;
 	private CountDownTimer timer;
 	private Question question;
+	private int timeRemaining;
+	private int time;
 	
 	private static final int THREE_MINUTES = 180000;
 	private static final int ONE_SECOND = 1000;
@@ -38,6 +40,7 @@ public class QuestionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.question);
 
+        timeRemaining = THREE_MINUTES;
         question = new Question(this);
         timeView = (TextView) this.findViewById(R.id.timeView);
         questionView = (TextView) this.findViewById(R.id.questionView);
@@ -50,6 +53,7 @@ public class QuestionActivity extends Activity {
         	public void onTick(long millisUntilFinished) {
         		timeView.setText((millisUntilFinished / 1000) + "");
         		count++;
+        		time = (int) millisUntilFinished / 1000;
         	}
         		public void onFinish() {
         			Intent intentStats = new Intent(QuestionActivity.this, StatsActivity.class);
@@ -86,11 +90,22 @@ public class QuestionActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+//        timer = new CountDownTimer(timeRemaining, ONE_SECOND) {
+//          	public void onTick(long millisUntilFinished) {
+//          		timeView.setText((millisUntilFinished / 1000) + "");
+//          		count++;
+//          	}
+//          		public void onFinish() {
+//          			Intent intentStats = new Intent(QuestionActivity.this, StatsActivity.class);
+//          			startActivity(intentStats);
+//          		}
+//          	}.start();
         // The activity has become visible (it is now "resumed").
     }
     @Override
     protected void onPause() {
         super.onPause();
+        timeRemaining = time;
         // Another activity is taking focus (this activity is about to be "paused").
     }
     @Override
@@ -115,7 +130,7 @@ public class QuestionActivity extends Activity {
       savedInstanceState.putInt("numOfIncorrect", Stats.numberIncorrect);
       savedInstanceState.putInt("avgTime", Stats.averageTime);
       savedInstanceState.putString("currentQuestion", question.getQuestion());
-      savedInstanceState.putInt("currentTime", THREE_MINUTES);
+      savedInstanceState.putInt("currentTime", time);
       // etc.
       super.onSaveInstanceState(savedInstanceState);
     }
@@ -125,12 +140,21 @@ public class QuestionActivity extends Activity {
       super.onRestoreInstanceState(savedInstanceState);
       // Restore UI state from the savedInstanceState.
       // This bundle has also been passed to onCreate.
-      int numOfQuizzes = savedInstanceState.getInt("numOfQuizzes");
-      int numOfCorrect = savedInstanceState.getInt("numOfCorrect");
-      int numOfIncorrect = savedInstanceState.getInt("numOfIncorrect");
-      int avgTime = savedInstanceState.getInt("avgTime");
-      int currentTime = savedInstanceState.getInt("currentTime");
-      String currentQuestion = savedInstanceState.getString("currentQuestion");
+      Stats.numberOfQuizzes = savedInstanceState.getInt("numOfQuizzes");
+      Stats.numberCorrect = savedInstanceState.getInt("numOfCorrect");
+      Stats.numberIncorrect = savedInstanceState.getInt("numOfIncorrect");
+      Stats.averageTime = savedInstanceState.getInt("avgTime");
+      timer = new CountDownTimer(savedInstanceState.getInt("currentTime"), ONE_SECOND) {
+      	public void onTick(long millisUntilFinished) {
+      		timeView.setText((millisUntilFinished / 1000) + "");
+      		count++;
+      	}
+      		public void onFinish() {
+      			Intent intentStats = new Intent(QuestionActivity.this, StatsActivity.class);
+      			startActivity(intentStats);
+      		}
+      	}.start();
+      savedInstanceState.getString("currentQuestion");
     }
     private void getNextQuestion() {
     	question.generateQuestion();

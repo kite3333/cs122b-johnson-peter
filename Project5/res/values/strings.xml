@@ -7,5 +7,6 @@
     <string name="stats">Stats</string>
     <string name="questionFieldDefault">Question Display</string>
     <string name="timeFieldDefault">Time Display</string>
+    <string name="buttonNewQuiz">New Quiz</string>
 
 </resources>

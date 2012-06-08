@@ -27,8 +27,10 @@ public class QuestionActivity extends Activity {
 	private CountDownTimer timer;
 	private Question question;
 	
-	private static final int THREE_MINUTES = 180000;
+	private static final int THREE_MINUTES = 18000;
 	private static final int ONE_SECOND = 1000;
+	
+	int count = 0;
 	
     /** Called when the activity is first created. */
     @Override
@@ -47,9 +49,13 @@ public class QuestionActivity extends Activity {
         timer = new CountDownTimer(THREE_MINUTES, ONE_SECOND) {
         	public void onTick(long millisUntilFinished) {
         		timeView.setText((millisUntilFinished / 1000) + "");
+        		count++;
         	}
         		public void onFinish() {
-        			timeView.setText("DONE");
+        			Intent intentStats = new Intent(QuestionActivity.this, StatsActivity.class);
+        			startActivity(intentStats);
+//        	        setContentView(R.layout.stats);
+//        			timeView.setText("DONE");
         		}
         	}.start();
         
@@ -60,10 +66,21 @@ public class QuestionActivity extends Activity {
 				// Change the button image
 				if (answerField.getCheckedRadioButtonId() == correctRadioID) {
 					getNextQuestion();
+					Stats.numberCorrect++;
+					Stats.quizTime = count;
+					Stats.averageTime = (Stats.averageTime + count) / 2;
+					count = 0;
 				}
+				else if(answerField.getCheckedRadioButtonId() != correctRadioID)
+				{
+					Stats.numberIncorrect++;
+				}
+				Stats.numberOfQuizzes++;
 			}
         });
     }
+    
+    
     
     private void getNextQuestion() {
     	question.generateQuestion();

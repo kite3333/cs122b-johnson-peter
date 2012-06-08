@@ -38,6 +38,6 @@ public class QuizActivity extends Activity {
     			Intent intent = new Intent(QuizActivity.this, StatsActivity.class);
     			startActivity(intent);
     		}
-            });
+        });
     } 
 }

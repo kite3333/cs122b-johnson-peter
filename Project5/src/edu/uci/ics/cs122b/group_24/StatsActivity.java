@@ -1,6 +1,7 @@
 package edu.uci.ics.cs122b.group_24;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -17,6 +18,7 @@ public class StatsActivity extends Activity {
 	private TextView numOfCorrectTextView;
 	private TextView numOfIncorrectTextView;
 	private TextView avgTimeTextView;
+	private Button buttonNewQuiz;
 	
 //	 /** Called when the activity is first created. */
     @Override
@@ -30,11 +32,21 @@ public class StatsActivity extends Activity {
         numOfCorrectTextView = (TextView) this.findViewById(R.id.numOfCorrectTextView);
         numOfIncorrectTextView = (TextView) this.findViewById(R.id.numOfIncorrectTextView);
         avgTimeTextView = (TextView) this.findViewById(R.id.avgTimeTextView);
+        buttonNewQuiz = (Button) this.findViewById(R.id.buttonNewQuiz);
 //        
         numOfQuizTextView.setText("" + Stats.numberOfQuizzes);
         numOfCorrectTextView.setText("" + Stats.numberCorrect);
         numOfIncorrectTextView.setText("" + Stats.numberIncorrect);
         avgTimeTextView.setText("" + Stats.averageTime);
+        
+        this.buttonNewQuiz.setOnClickListener(new OnClickListener() {
+    		
+    		public void onClick(View v) {
+    			// Change the button image
+    			Intent intent = new Intent(StatsActivity.this, QuestionActivity.class);
+    			startActivity(intent);
+    		}
+        });
     }
 	//the statistics about the user's overall score so far
 	

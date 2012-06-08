@@ -39,8 +39,21 @@ public class Question {
 		return correctAnswer;
 	}
 	
-	public void generateQuestion() {
+	public void test() {
 		int choice = 0; //getRandInt(3.0);
+		choices = new String[4];
+		Cursor cursor = null;
+		int correctRowNum = -1;
+		String answer = null;
+		int totalCount = -1;
+		cursor = db.getTable(DbAdapter.MOVIES_NAME);
+		totalCount = cursor.getCount();
+		question = "" + totalCount;
+		// Randomly choose the movie of interest
+	}
+	
+	public void generateQuestion() {
+		int choice = 2; //getRandInt(3.0);
 		choices = new String[4];
 		Cursor cursor = null;
 		int correctRowNum = -1;
@@ -54,12 +67,11 @@ public class Question {
 			case 0: // Who directed the movie X?
 				cursor = db.getTable(DbAdapter.MOVIES_NAME);
 				totalCount = cursor.getCount();
-				
 				// Randomly choose the movie of interest
 				correctRowNum = getRandInt((double) totalCount);
 				cursor.moveToPosition(correctRowNum);
-				question = "Who directed the movie, \"" + cursor.getString(DbAdapter.COLUMN_NUM_TITLE) + ", " +
-						cursor.getString(DbAdapter.COLUMN_NUM_YEAR) + "\"?";
+				question = "Who directed the movie, " + cursor.getString(DbAdapter.COLUMN_NUM_TITLE) + " (" +
+						cursor.getString(DbAdapter.COLUMN_NUM_YEAR) + ")?";
 				// Assign correct answer
 				correctAnswer = cursor.getString(DbAdapter.COLUMN_NUM_DIRECTOR);
 				choices[0] = correctAnswer;
@@ -89,13 +101,14 @@ public class Question {
 				// Get 3 wrong answers by adding an integer between -10 and -1 or 1 and 10 to the correct year
 				int correctYear = Integer.parseInt(correctAnswer);
 				int adjustment = 0;
-				for (int i = 1; i < 3; i++) {
+				for (int i = 1; i <= 3; i++) {
 					//Math.random() chooses a double between 0.0 and 1.0
 					adjustment = Math.random() > 0.5 ? getRandInt(10.0) + 1 : getRandInt(10.0) - 10;
-					choices[i] = "" + correctYear + adjustment;
-					for (int j = i - 1; j <= 0; j--) {
+					choices[i] = "" + (correctYear + adjustment);
+					for (int j = i - 1; j >= 0; j--) {
 						if (choices[i].equals(choices[j])) {
 							i--;
+							break;
 						}
 					}
 				}
@@ -107,7 +120,7 @@ public class Question {
 				cursor.moveToPosition(getRandInt((double) totalCount));
 				int movieID = cursor.getInt(DbAdapter.COLUMN_NUM_ID);
 				question = "Which actor starred in the movie, \"" + cursor.getString(DbAdapter.COLUMN_NUM_TITLE) + "\"?";
-				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_NUM_MOVIE_ID + "= '" + movieID + "'");
+				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_MOVIE_ID + "= '" + movieID + "'");
 				totalCount = cursor.getCount();
 				// Choose the correct answer's ID and add to starIDs
 				cursor.moveToPosition(getRandInt((double) totalCount));
@@ -118,6 +131,7 @@ public class Question {
 				HashSet<Integer> usedIDs = new HashSet<Integer>(); 
 				while (!cursor.isAfterLast()) {
 					usedIDs.add(cursor.getInt(DbAdapter.COLUMN_NUM_STAR_ID));
+					cursor.moveToNext();
 				}
 				// Get a list of all entries minus the ones with the movie_id of the movie in question.
 				cursor = db.query(DbAdapter.STARS_IN_MOVIES_NAME, DbAdapter.COLUMN_NUM_MOVIE_ID + "!= '" + movieID + "'");
@@ -130,9 +144,11 @@ public class Question {
 						i--;
 					}
 				}
+				int count = 0;
 				// Get the names of the stars that were chosen
 				for (int i = 0; i <= 3; i++) {
-					cursor = db.query(DbAdapter.STARS_NAME, DbAdapter.COLUMN_ID + "= '" + starIDs[i]);
+					cursor = db.query(DbAdapter.STARS_NAME, DbAdapter.COLUMN_ID + "= '" + starIDs[i] + "'");
+					cursor.moveToFirst();
 					if (cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME) != null) {
 						choices[i] = cursor.getString(DbAdapter.COLUMN_NUM_FIRST_NAME) + " " + cursor.getString(DbAdapter.COLUMN_NUM_LAST_NAME);
 					}

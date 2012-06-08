@@ -120,9 +120,5 @@ public class DbAdapter extends SQLiteOpenHelper{
 	public Cursor query(String table, String selection) {
 		return mDb.query(table, null, selection, null, null, null, null);
 	}
-	
-//	public Cursor fetchAll() {
-//		return mDb.query(TABLE_NAME, new String[] {FRUIT_NAME}, null, null, null, null, null);
-//	}
 
 }

@@ -20,6 +20,8 @@ public class QuestionActivity extends Activity {
         Question question = new Question(this);
         timeView = (TextView) this.findViewById(R.id.timeView);
         questionView = (TextView) this.findViewById(R.id.questionView);
+        //question.generateQuestion();
+        questionView.setText(question.getQuestion());
         buttonSubmit = (Button) this.findViewById(R.id.buttonSubmit);
         
 

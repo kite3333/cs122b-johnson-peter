@@ -40,15 +40,15 @@ public class DbAdapter extends SQLiteOpenHelper{
 	private static final String TAG = "DBAdapter";
 	
 	// SQL Queries
-	private static final String CREATE_TABLE_STARS = "create table stars(id integer primary key NOT NULL AUTO_INCREMENT, " +
-			"first_name varchar(50) NOT NULL, last_name varchar(50) NOT NULL);";
+	private static final String CREATE_TABLE_STARS = "create table stars(id integer primary key, " +
+			"first_name varchar(50), last_name varchar(50));";
 
-	private static final String CREATE_TABLE_MOVIES = "create table movies (id integer primary key NOT NULL AUTO_INCREMENT, " +
-			"title varchar(100) NOT NULL, year integer NOT NULL, director varchar(100) NOT NULL);";
+	private static final String CREATE_TABLE_MOVIES = "create table movies (id integer primary key, " +
+			"title varchar(100), year integer, director varchar(100));";
 
 	// Foreign key parts not included because not supported by SQLite
-	private static final String CREATE_TABLES_STARS_IN_MOVIES = "create table stars_in_movies (star_id integer NOT NULL, " + 
-			"movie_id integer NOT NULL);";
+	private static final String CREATE_TABLES_STARS_IN_MOVIES = "create table stars_in_movies (star_id integer, " + 
+			"movie_id integer);";
 	
 	public DbAdapter(Context ctx){
 		super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
@@ -108,8 +108,17 @@ public class DbAdapter extends SQLiteOpenHelper{
 		db.execSQL("DROP TABLE IF EXISTS " + STARS_IN_MOVIES_NAME + ", " + STARS_NAME + ", " + MOVIES_NAME + ";");
 		onCreate(db);	
 	}
-	public Cursor getQ1Data() {
+	
+	public Cursor getTable(String tableName) {
 		return mDb.query(MOVIES_NAME, null, null, null, null, null, null);
+	}
+	
+	public Cursor rawQuery(String query) {
+		return mDb.rawQuery(query, null);
+	}
+	
+	public Cursor query(String table, String selection) {
+		return mDb.query(table, null, selection, null, null, null, null);
 	}
 	
 //	public Cursor fetchAll() {

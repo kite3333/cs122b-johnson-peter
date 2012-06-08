@@ -37,7 +37,7 @@ public class Question {
 	}
 	
 	public String getCorrectAnswer() {
-		return correctAnswer;
+		return correctAnswer.replaceAll("\"", "");
 	}
 	
 	public void test() {
@@ -327,7 +327,7 @@ public class Question {
 		}
 	}
 	
-	private int getRandInt(double maxExclusive) {
+	public static int getRandInt(double maxExclusive) {
 		return (int) Math.ceil(Math.random() * maxExclusive) - 1;
 	}
 	

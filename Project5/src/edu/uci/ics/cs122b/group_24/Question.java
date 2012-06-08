@@ -32,7 +32,7 @@ public class Question {
 	}
 	
 	public String getAnswer(int choice) {
-		return choices[choice];
+		return choices[choice].replaceAll("\"", "");
 	}
 	
 	public String getCorrectAnswer() {

@@ -81,6 +81,55 @@ public class QuestionActivity extends Activity {
     }
     
     
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The activity has become visible (it is now "resumed").
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Another activity is taking focus (this activity is about to be "paused").
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // The activity is no longer visible (it is now "stopped")
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // The activity is about to be destroyed.
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+      // Save UI state changes to the savedInstanceState.
+      // This bundle will be passed to onCreate if the process is
+      // killed and restarted.
+
+      savedInstanceState.putInt("numOfQuizzes", Stats.numberOfQuizzes);
+      savedInstanceState.putInt("numOfCorrect", Stats.numberCorrect);
+      savedInstanceState.putInt("numOfIncorrect", Stats.numberIncorrect);
+      savedInstanceState.putInt("avgTime", Stats.averageTime);
+      savedInstanceState.putString("currentQuestion", question.getQuestion());
+      savedInstanceState.putInt("currentTime", THREE_MINUTES);
+      // etc.
+      super.onSaveInstanceState(savedInstanceState);
+    }
+    
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+      super.onRestoreInstanceState(savedInstanceState);
+      // Restore UI state from the savedInstanceState.
+      // This bundle has also been passed to onCreate.
+      int numOfQuizzes = savedInstanceState.getInt("numOfQuizzes");
+      int numOfCorrect = savedInstanceState.getInt("numOfCorrect");
+      int numOfIncorrect = savedInstanceState.getInt("numOfIncorrect");
+      int avgTime = savedInstanceState.getInt("avgTime");
+      int currentTime = savedInstanceState.getInt("currentTime");
+      String currentQuestion = savedInstanceState.getString("currentQuestion");
+    }
     
     private void getNextQuestion() {
     	question.generateQuestion();
